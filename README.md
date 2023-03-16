@@ -1,4 +1,4 @@
-Aplikacja dla firma kurierskiej
+Aplikacja dla firmy kurierskiej
 
 Skład grupy : <br />
 Patryk Czuchnowski (patczuch@student.agh.edu.pl) <br />
