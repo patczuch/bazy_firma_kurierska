@@ -3,12 +3,12 @@ Schemat bazy danych:
 
 <img src="schemat.png" alt="Schemat">
 
-<h4>Skład grupy : <br /> </h4>
+<h3>Skład grupy : <br /> </h3>
 Patryk Czuchnowski (patczuch@student.agh.edu.pl) <br />
 Andrzej Wacławik (wajarema@student.agh.edu.pl) <br />
 Michał Pędrak (michalpedrak@student.agh.edu.pl) <br />
 
-<h4>Technologie : <br /> </h4>
+<h3>Technologie : <br /> </h3>
 Baza - PostgreSQL <br />
 Frontend - React <br />
 Backend - Python, Flask
