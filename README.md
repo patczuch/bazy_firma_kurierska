@@ -9,7 +9,7 @@ Andrzej Wacławik (wajarema@student.agh.edu.pl) <br />
 Michał Pędrak (michalpedrak@student.agh.edu.pl) <br />
 
 <h3>Technologie : <br /> </h3>
-Baza - PostgreSQL <br />
+Baza danych - PostgreSQL <br />
 Backend - Python, Flask  <br />
 Frontend - React
 
