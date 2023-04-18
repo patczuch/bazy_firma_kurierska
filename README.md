@@ -10,5 +10,6 @@ Michał Pędrak (michalpedrak@student.agh.edu.pl) <br />
 
 <h3>Technologie : <br /> </h3>
 Baza - PostgreSQL <br />
-Frontend - React <br />
-Backend - Python, Flask
+Backend - Python, Flask  <br />
+Frontend - React
+
