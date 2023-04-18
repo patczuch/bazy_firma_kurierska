@@ -1,5 +1,5 @@
 Aplikacja dla firmy kurierskiej  <br />
-Schemat:
+Schemat bazy danych:
 
 <img src="schemat.png" alt="Schemat">
 
