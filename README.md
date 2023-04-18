@@ -1,6 +1,6 @@
 Aplikacja dla firmy kurierskiej
 
-![alt text](https://github.com/patczuch/bazy_firma_kurierska/image.jpg?raw=true)
+![alt text](https://github.com/patczuch/bazy_firma_kurierska/schemat.png?raw=true)
 
 Skład grupy : <br />
 Patryk Czuchnowski (patczuch@student.agh.edu.pl) <br />
