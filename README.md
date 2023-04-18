@@ -1,4 +1,5 @@
-Aplikacja dla firmy kurierskiej
+Aplikacja dla firmy kurierskiej  <br />
+Schemat:
 
 <img src="schemat.png" alt="Schemat">
 
