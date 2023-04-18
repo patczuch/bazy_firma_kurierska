@@ -1,5 +1,5 @@
 <h1>Aplikacja dla firmy kurierskiej  <br /> </h1>
-Schemat bazy danych:
+<h3>Schemat bazy danych:</h3>
 
 <img src="schemat.png" alt="Schemat">
 
