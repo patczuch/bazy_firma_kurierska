@@ -1,38 +1,21 @@
-import {useState, useEffect} from "react";
+import React, {useState, useEffect, Component} from "react";
+import {Tracking} from "./components/Tracking"
+import Home from "./components/Home"
+import {Navbar} from "./components/Navbar"
+import {Routes, BrowserRouter, Route} from "react-router-dom";
 import './App.css'
-
+import 'bulma/css/bulma.min.css';
 
 function App() {
-  const [parcelpoints, setParcelpoints] = useState('inital text');
-
-  const host = "localhost";
-  const port = "5000";
-
-  const getParcelpoints = () => {
-      const requestOptions = {
-        method: 'GET',
-        header: { 'Content-Type': 'application/json'}
-      };
-      var res = ""
-      fetch('http://' + host + ':' + port + '/get_parcelpoints', requestOptions)
-        .then(response => response.json())
-        .then(result => {
-          //console.log(result)
-          //console.log(result[0][1])
-          for (var i = 0; i < result.length; i++)
-            res += result[i][0] + " " + result[i][1] + " " + result[i][2] + " " + result[i][3] + " " + result[i][4] + "\n"
-          setParcelpoints(res)
-        });
-    };
-
-    useEffect(() => {
-      getParcelpoints();
-    }, []);
-
   return (
-    <div className="App">
-      test<br></br>
-      {parcelpoints.split('\n').map(str => <p key={str}>{str}</p>)}
+    <div>
+      <BrowserRouter>
+        <Navbar/>
+        <Routes>
+            <Route exact path="/" element={<Home />}></Route>
+            <Route exact path="/tracking" element={<Tracking />}></Route>
+        </Routes>
+      </BrowserRouter>
     </div>
   )
 }
