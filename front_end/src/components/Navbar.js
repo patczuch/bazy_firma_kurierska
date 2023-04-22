@@ -26,13 +26,12 @@ export const Navbar = () => {
 
         <div className={`navbar-menu ${isOpen && "is-active"}`}>
           <div className="navbar-start">
-            <NavLink className="navbar-item" activeClassName="is-active" to="/">
+            <NavLink className="navbar-item" to="/">
               Strona główna
             </NavLink>
 
             <NavLink
               className="navbar-item"
-              activeClassName="is-active"
               to="/tracking"
             >
               Śledzenie przesyłki
@@ -40,7 +39,6 @@ export const Navbar = () => {
 
             <NavLink
               className="navbar-item"
-              activeClassName="is-active"
               to="/"
             >
               coś

@@ -30,6 +30,44 @@ CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
 
 
+--
+-- Name: packagetrackinghistory(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.packagetrackinghistory(_package_id integer) RETURNS TABLE("time" timestamp without time zone, description character varying)
+    LANGUAGE plpgsql
+    AS $$
+begin
+	return query
+		(
+		select
+			pps.time, ('Przyjęto w oddziale ' || pps.parcelpoint_id)::varchar
+		from
+			parcelpointpackages pps
+		where
+			_package_id = pps.package_id
+	    union
+        select
+            r.time, ('Wysłano do oddziału ' || r.destination_parcelpoint_id)::varchar
+		from
+			routes r
+		inner join routepackages rp on r.id = rp.route_id
+		where
+			_package_id = rp.package_id
+        union
+        select p.pickedup_time, 'Odebrano'::varchar
+        from packages p
+        where
+            _package_id = p.id
+        and
+            p.pickedup_time is not null
+		)
+	    order by time;
+end;$$;
+
+
+ALTER FUNCTION public.packagetrackinghistory(_package_id integer) OWNER TO postgres;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -194,7 +232,7 @@ COPY public.packagedimensions (id, name, dimension_x, dimension_y, dimension_z) 
 --
 
 COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id, pickedup_time) FROM stdin;
-1	5.00000	2	1	2	2	\N
+1	5.00000	2	1	2	2	2023-04-22 15:54:11
 \.
 
 
@@ -204,6 +242,7 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 
 COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM stdin;
 1	1	1	2023-04-21 23:33:19
+2	1	2	2023-04-22 12:53:58
 \.
 
 
@@ -241,7 +280,7 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 --
 
 COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_id, completed) FROM stdin;
-1	2023-04-21 23:40:19	2	1	1	f
+1	2023-04-21 23:40:19	2	1	1	t
 \.
 
 
