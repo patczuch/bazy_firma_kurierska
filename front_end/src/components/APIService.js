@@ -12,6 +12,16 @@ export default class APIService{
     .catch(error => console.log(error))
     }
 
+    static register_package(body){
+        return fetch('http://' + this.host + ':' + this.port + '/new_package',{
+            'method':'POST',
+            headers : {'Content-Type':'application/json'},
+            body:JSON.stringify(body)
+    })
+    .then(response => response.json())
+    .catch(error => console.log(error))
+    }
+
     /*const [parcelpoints, setParcelpoints] = useState('inital text');
 
     const host = "localhost";

@@ -39,13 +39,39 @@ export const Navbar = () => {
 
             <NavLink
               className="navbar-item"
-              to="/"
+              to="/new_package"
             >
-              coś
+              Nowa przesyłka
+            </NavLink>
+
+            <NavLink
+              className="navbar-item"
+              to="/register_pickup"
+            >
+              Zarejestruj odbiór
+            </NavLink>
+
+            <NavLink
+              className="navbar-item"
+              to="/new_route"
+            >
+              Nowa trasa
+            </NavLink>
+
+            <NavLink
+              className="navbar-item"
+              to="/finish_route"
+            >
+              Zakończ trasę
             </NavLink>
           </div>
 
           <div className="navbar-end">
+            <div className="navbar-item">
+              <div className="buttons">
+                <a className="button is-white">Rejestracja</a>
+              </div>
+            </div>
             <div className="navbar-item">
               <div className="buttons">
                 <a className="button is-white">Logowanie</a>

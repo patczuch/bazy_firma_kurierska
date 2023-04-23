@@ -41,7 +41,11 @@ begin
 	return query
 		(
 		select
-			pps.time, ('Przyjęto w oddziale ' || pps.parcelpoint_id)::varchar
+			pps.time,
+			CASE WHEN pps.parcelpoint_id = (select destination_packagepoint_id from packages where id = _package_id) THEN
+			    ('Gotowa do odbioru w oddziale ' || pps.parcelpoint_id)::varchar
+                ELSE ('Przyjęto w oddziale ' || pps.parcelpoint_id)::varchar
+		    END
 		from
 			parcelpointpackages pps
 		where
@@ -67,6 +71,60 @@ end;$$;
 
 
 ALTER FUNCTION public.packagetrackinghistory(_package_id integer) OWNER TO postgres;
+
+--
+-- Name: registerpackage(numeric, integer, character varying, character varying, character varying, character varying, integer, integer, character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.registerpackage(_weight numeric, _dimensions_id integer, _recipient_name character varying, _recipient_phone_number character varying, _sender_name character varying, _sender_phone_number character varying, _destination_packagepoint_id integer, _source_packagepoint_id integer, _recipient_email character varying DEFAULT NULL::character varying, _sender_email character varying DEFAULT NULL::character varying) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+declare
+    sender_id int := (select max(id) from personinfo)+1;
+    recipient_id int := sender_id + 1;
+    _package_id int := (select max(id) from packages)+1;
+    parcelpointpackages_id int := (select max(id) from parcelpointpackages)+1;
+begin
+    if (NOT EXISTS (select * from parcelpoints where id = _destination_packagepoint_id)) then
+        RAISE unique_violation USING MESSAGE = 'Package point with id ' || _destination_packagepoint_id || ' doesnt exist!';
+    end if;
+
+    if (NOT EXISTS (select * from parcelpoints where id = _source_packagepoint_id)) then
+        RAISE unique_violation USING MESSAGE = 'Package point with id ' || _source_packagepoint_id || ' doesnt exist!';
+    end if;
+
+    if (_source_packagepoint_id = _destination_packagepoint_id) then
+        RAISE unique_violation USING MESSAGE = 'Source and destination package points cant be equal!';
+    end if;
+
+    if (NOT EXISTS (select * from packagedimensions where id = _dimensions_id)) then
+        RAISE unique_violation USING MESSAGE = 'Package dimensions with id ' || _dimensions_id || ' dont exist!';
+    end if;
+
+    if (_weight > 50) then
+        RAISE unique_violation USING MESSAGE = 'Max package weight is 50!';
+    end if;
+
+    if (_weight < 0.1) then
+        RAISE unique_violation USING MESSAGE = 'Min package weight is 0.1!';
+    end if;
+
+    insert into personinfo (id, name, phone_number, email)
+        values(sender_id, _sender_name, _sender_phone_number, _sender_email);
+    insert into personinfo (id, name, phone_number, email)
+        values(recipient_id, _recipient_name, _recipient_phone_number, _recipient_email);
+
+    insert into packages (id, weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id)
+        values (_package_id, _weight, _dimensions_id, sender_id, recipient_id, _destination_packagepoint_id);
+
+    insert into parcelpointpackages (id, package_id, parcelpoint_id, "time")
+        values (parcelpointpackages_id, _package_id, _source_packagepoint_id, CURRENT_TIMESTAMP(2));
+
+    return _package_id;
+end;$$;
+
+
+ALTER FUNCTION public.registerpackage(_weight numeric, _dimensions_id integer, _recipient_name character varying, _recipient_phone_number character varying, _sender_name character varying, _sender_phone_number character varying, _destination_packagepoint_id integer, _source_packagepoint_id integer, _recipient_email character varying, _sender_email character varying) OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -185,7 +243,8 @@ CREATE TABLE public.routes (
     destination_parcelpoint_id integer NOT NULL,
     vehicle_id integer NOT NULL,
     courier_id integer NOT NULL,
-    completed boolean DEFAULT false NOT NULL
+    completed boolean DEFAULT false NOT NULL,
+    source_parcelpoint_id integer
 );
 
 
@@ -233,6 +292,8 @@ COPY public.packagedimensions (id, name, dimension_x, dimension_y, dimension_z) 
 
 COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id, pickedup_time) FROM stdin;
 1	5.00000	2	1	2	2	2023-04-22 15:54:11
+2	0.50000	1	3	4	1	\N
+3	1.20000	2	5	6	2	\N
 \.
 
 
@@ -243,6 +304,8 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM stdin;
 1	1	1	2023-04-21 23:33:19
 2	1	2	2023-04-22 12:53:58
+3	2	2	2023-04-23 18:03:41.04
+4	3	1	2023-04-23 18:33:55.79
 \.
 
 
@@ -263,6 +326,10 @@ COPY public.parcelpoints (id, name, city, street, house_number, apartment_humber
 COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 1	Jan Kowalski	123456789	\N
 2	Tomasz Nowak	987654321	\N
+3	Olaf Kudłacz	123456789	
+4	Radosław Cegła	321654876	
+5	Tomasz Misztal	123456123	
+6	Jan Nowak	568901233	
 \.
 
 
@@ -279,8 +346,8 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 -- Data for Name: routes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_id, completed) FROM stdin;
-1	2023-04-21 23:40:19	2	1	1	t
+COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_id, completed, source_parcelpoint_id) FROM stdin;
+1	2023-04-21 23:40:19	2	1	1	t	1
 \.
 
 
@@ -438,11 +505,19 @@ ALTER TABLE ONLY public.routes
 
 
 --
--- Name: routes routes_packagepoints; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: routes routes_parcelpoints_1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.routes
-    ADD CONSTRAINT routes_packagepoints FOREIGN KEY (destination_parcelpoint_id) REFERENCES public.parcelpoints(id);
+    ADD CONSTRAINT routes_parcelpoints_1 FOREIGN KEY (destination_parcelpoint_id) REFERENCES public.parcelpoints(id);
+
+
+--
+-- Name: routes routes_parcelpoints_2; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.routes
+    ADD CONSTRAINT routes_parcelpoints_2 FOREIGN KEY (source_parcelpoint_id) REFERENCES public.parcelpoints(id);
 
 
 --

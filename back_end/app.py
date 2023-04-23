@@ -21,6 +21,16 @@ def get_package_history():
     data = pg_cur.fetchall()
     return jsonify(data)
 
+@app.route('/new_package', methods=['POST'], strict_slashes=False)
+def new_package():
+    sql = "select registerpackage(" + request.json['weight'] + ", " + request.json['dimensions_id'] + ", '" + request.json['recipient_name'] + "', '" + \
+        request.json['recipient_phone_number'] + "', '"+ request.json['sender_name'] + "', '" + request.json['sender_phone_number'] +"', " + \
+        request.json['destination_packagepoint_id'] + ", "+ request.json['source_packagepoint_id'] + ", '" + request.json['recipient_email'] + "', '" + request.json['sender_email'] + "');"
+    pg_cur.execute(sql)
+    pg_conn.commit()
+    data = pg_cur.fetchall()
+    return jsonify(data)
+
 
 #@app.route('/insert_example', methods=['POST'])
 def insert_example(data):
