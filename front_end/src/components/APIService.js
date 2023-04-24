@@ -1,3 +1,4 @@
+
 export default class APIService{ 
     static host = "localhost";
     static port = "5000";
@@ -22,6 +23,36 @@ export default class APIService{
     .catch(error => console.log(error))
     }
 
+    static login(email, password, props, navigate){
+        return fetch('http://' + this.host + ':' + this.port + '/login',{
+            'method':'POST',
+            headers : {'Content-Type':'application/json'},
+            body:JSON.stringify({email, password})
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data['access_token'] != undefined)
+            {
+                props.setToken(data['access_token'])
+                navigate('/', { replace: true })
+            }
+            else
+                alert("Błędne dane logowania!")
+          })
+          .catch(error => console.log(error))
+        }
+
+    static logout(props){
+         return fetch('http://' + this.host + ':' + this.port + '/logout',{
+            'method':'POST'
+        })
+            .then(response => {
+            props.removeToken()
+        })
+            .catch(error => console.log(error))
+        }    
+}
+
     /*const [parcelpoints, setParcelpoints] = useState('inital text');
 
     const host = "localhost";
@@ -41,4 +72,3 @@ export default class APIService{
             setParcelpoints(res)
         });
     };*/
-}

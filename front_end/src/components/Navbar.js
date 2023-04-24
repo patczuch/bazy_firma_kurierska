@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
+import APIService from "./APIService"; 
 
-export const Navbar = () => {
+export const Navbar = (props) => {
   const [isOpen, setOpen] = useState(false);
+
+  const logout=(event)=>{ 
+    event.preventDefault()
+    APIService.logout(props)
+  }
+
   return (
     <nav
       className="navbar is-primary"
@@ -66,6 +73,7 @@ export const Navbar = () => {
             </NavLink>
           </div>
 
+          {!props.token && props.token!=="" &&props.token!== undefined ? 
           <div className="navbar-end">
             <div className="navbar-item">
               <div className="buttons">
@@ -74,10 +82,25 @@ export const Navbar = () => {
             </div>
             <div className="navbar-item">
               <div className="buttons">
-                <a className="button is-white">Logowanie</a>
+                  <NavLink
+                    className="button is-white"
+                    to="/login"
+                  >
+                  Logowanie
+                  </NavLink>
               </div>
             </div>
+          </div> : 
+          <div className="navbar-end">
+          <div className="navbar-item">
+            <div className="buttons">
+              <a className="button is-white" onClick={logout}>
+                  Wyloguj
+              </a>
+            </div>
           </div>
+          </div>
+          }
         </div>
       </div>
     </nav>
