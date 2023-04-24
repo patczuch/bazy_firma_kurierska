@@ -8,6 +8,9 @@ create or replace function PackageTrackingHistory (
 	language plpgsql
 as $$
 begin
+	if (NOT EXISTS (select * from packages where id = _package_id)) then
+        	RAISE unique_violation USING MESSAGE = 'Package with id ' || _package_id || ' doesnt exist!';
+    	end if;
 	return query
 		(
 		select

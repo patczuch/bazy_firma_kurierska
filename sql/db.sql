@@ -17,6 +17,22 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS '';
+
+
+--
 -- Name: adminpack; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -31,6 +47,112 @@ COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
 
 
 --
+-- Name: addroute(timestamp without time zone, integer, integer, integer, integer, integer[]); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.addroute(_time timestamp without time zone, _sourceid integer, _destinationid integer, _vehicleid integer, _courierid integer, _packcagesid integer[]) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+declare
+    objetosc integer := 0;
+    waga integer := 0;
+    _routeID integer := (select max(id) from routes) + 1;
+    _pacID integer;
+begin
+    if (_time < now() ) then
+        RAISE unique_violation USING MESSAGE = 'Cant create route in past !';
+    end if;
+
+    if (NOT EXISTS (select * from parcelpoints where id = _sourceID)) then
+        RAISE unique_violation USING MESSAGE = 'Package point with id ' || _sourceID || ' doesnt exist!';
+    end if;
+
+    if (NOT EXISTS (select * from parcelpoints where id = _destinationID)) then
+        RAISE unique_violation USING MESSAGE = 'Package point with id ' || _destinationID || ' doesnt exist!';
+    end if;
+
+    if (NOT EXISTS (select * from vehicles where id = _vehicleID)) then
+        RAISE unique_violation USING MESSAGE = 'Vehicle with id ' || _vehicleID || ' doesnt exist!';
+    end if;
+
+    if (NOT EXISTS (select * from couriers where id = _courierID)) then
+        RAISE unique_violation USING MESSAGE = 'Courier with id ' || _courierID || ' doesnt exist!';
+    end if;
+
+    if (EXISTS (select * from routes r where r.courier_id = _courierID and r.time = _time)) then
+        RAISE unique_violation USING MESSAGE = 'Courier with id ' || _courierID || ' has planned route on this time!';
+    end if;
+
+    if (EXISTS (select * from routes r where r.vehicle_id = _vehicleID and r.time = _time)) then
+        RAISE unique_violation USING MESSAGE = 'Vehicle with id ' || _vehicleID || ' has planned route on this time!';
+    end if;
+
+    foreach _pacID in array _packcagesID loop
+        if (NOT EXISTS (select * from packages where id = _pacID)) then
+            RAISE unique_violation USING MESSAGE = 'Package with id ' || _pacID || ' doesnt exist!';
+        end if;
+        if (packagelocation(_pacID) != _sourceID) then
+            RAISE unique_violation USING MESSAGE = 'Package with id ' || _pacID || ' isnt at source package point !';
+        end if;
+        objetosc := objetosc + (select pd.dimension_x * pd.dimension_y * pd.dimension_z from packagedimensions pd
+            inner join packages p on pd.id = p.dimensions_id where p.id = _pacID);
+        waga := waga + (select p.weight from packages p where  p.id = _pacID);
+    end loop;
+
+    if (objetosc > (select v.dimension_z * v.dimension_x * v.dimension_y from vehicles v where v.id = _vehicleID)) then
+        RAISE unique_violation USING MESSAGE = 'Packages are to big for this vehicle ' || _vehicleID;
+    end if;
+
+    if (waga > (select v.max_weight from vehicles v where v.id = _vehicleID)) then
+        RAISE unique_violation USING MESSAGE = 'Packages weight too much for this vehicle ' || _vehicleID;
+    end if;
+
+    insert into routes (id ,time, destination_parcelpoint_id, source_parcelpoint_id, vehicle_id, courier_id, completed)
+        values(_routeID ,_time, _destinationID, _sourceID, _vehicleID, _courierID, false);
+
+    foreach _pacID in array _packcagesID loop
+       insert into routepackages(route_id, package_id)
+            values(_routeID, _pacID);
+    end loop;
+
+    return _routeID;
+end;
+$$;
+
+
+ALTER FUNCTION public.addroute(_time timestamp without time zone, _sourceid integer, _destinationid integer, _vehicleid integer, _courierid integer, _packcagesid integer[]) OWNER TO postgres;
+
+--
+-- Name: packagelocation(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.packagelocation(_package_id integer) RETURNS TABLE(parcelpointid integer)
+    LANGUAGE plpgsql
+    AS $$
+begin
+    if (NOT EXISTS (select * from packages where id = _package_id)) then
+        RAISE unique_violation USING MESSAGE = 'Package with id ' || _package_id || ' doesnt exist!';
+    end if;
+	return query
+		(
+		select
+		    case when (select count(p.pickedup_time) from packages p where _package_id = p.id
+		               and p.pickedup_time is not null) > 0 then null
+		    else (select t.parcelpoint_id from
+		         ((select ppp.parcelpoint_id, ppp.time from parcelpointpackages ppp where ppp.package_id = _package_id
+		          union
+		          select -1::integer, r.time from routes r inner join routepackages rp on r.id = rp.route_id
+		                where rp.package_id = _package_id
+		          ) order by time desc limit 1) t)
+		    end
+		);
+end;
+$$;
+
+
+ALTER FUNCTION public.packagelocation(_package_id integer) OWNER TO postgres;
+
+--
 -- Name: packagetrackinghistory(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -38,6 +160,9 @@ CREATE FUNCTION public.packagetrackinghistory(_package_id integer) RETURNS TABLE
     LANGUAGE plpgsql
     AS $$
 begin
+    if (NOT EXISTS (select * from packages where id = _package_id)) then
+        RAISE unique_violation USING MESSAGE = 'Package with id ' || _package_id || ' doesnt exist!';
+    end if;
 	return query
 		(
 		select
@@ -67,7 +192,8 @@ begin
             p.pickedup_time is not null
 		)
 	    order by time;
-end;$$;
+end;
+$$;
 
 
 ALTER FUNCTION public.packagetrackinghistory(_package_id integer) OWNER TO postgres;
@@ -306,10 +432,10 @@ COPY public.packagedimensions (id, name, dimension_x, dimension_y, dimension_z) 
 --
 
 COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id, pickedup_time) FROM stdin;
-1	5.00000	2	1	2	2	2023-04-22 15:54:11
 2	0.50000	1	3	4	1	\N
 3	1.20000	2	5	6	2	\N
 4	0.20000	2	7	8	1	\N
+1	5.00000	2	1	2	2	\N
 \.
 
 
@@ -319,7 +445,6 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 
 COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM stdin;
 1	1	1	2023-04-21 23:33:19
-2	1	2	2023-04-22 12:53:58
 3	2	2	2023-04-23 18:03:41.04
 4	3	1	2023-04-23 18:33:55.79
 5	4	2	2023-04-24 17:09:52.81
@@ -358,6 +483,8 @@ COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 
 COPY public.routepackages (route_id, package_id) FROM stdin;
 1	1
+2	2
+2	4
 \.
 
 
@@ -367,6 +494,7 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 
 COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_id, completed, source_parcelpoint_id) FROM stdin;
 1	2023-04-21 23:40:19	2	1	1	t	1
+2	2023-04-25 23:40:19	1	1	1	f	2
 \.
 
 
@@ -383,7 +511,7 @@ COPY public.users (id, courier_id, parcelpoint_id, email, password_hash) FROM st
 --
 
 COPY public.vehicles (id, registration_plate, dimension_x, dimension_y, dimension_z, max_weight) FROM stdin;
-1	KRA81TL	500.00000	228.00000	196.00000	1000.00000
+1	KRA81TL	500.00000	228.00000	196.00000	10000.50000
 \.
 
 
@@ -585,6 +713,13 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_parcelpoints FOREIGN KEY (parcelpoint_id) REFERENCES public.parcelpoints(id);
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 
 
 --
