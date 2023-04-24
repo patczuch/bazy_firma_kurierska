@@ -18,7 +18,7 @@ export function NewPackage() {
         APIService.register_package({weight, dimensions_id, recipient_name, recipient_phone_number, sender_name, sender_phone_number, 
             destination_packagepoint_id, source_packagepoint_id, recipient_email, sender_email})
         .then((response) => {
-            if (response != undefined)
+            if (response != "error")
                 alert("Paczka zarejestrowana. ID: " + response)
             else
                 alert("Wystąpił błąd. Paczka nie została zarejestrowana.")

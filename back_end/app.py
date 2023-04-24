@@ -17,7 +17,12 @@ if __name__ == '__main__':
 @app.route('/tracking', methods=['POST'], strict_slashes=False)
 def get_package_history():
     sql = "select * from packagetrackinghistory(" + request.json['package_id'] + ")"
-    pg_cur.execute(sql)
+    try:
+        pg_cur.execute(sql)
+        pg_conn.commit()
+    except BaseException:
+        pg_conn.rollback()
+        return jsonify("error")
     data = pg_cur.fetchall()
     return jsonify(data)
 
@@ -26,8 +31,12 @@ def new_package():
     sql = "select registerpackage(" + request.json['weight'] + ", " + request.json['dimensions_id'] + ", '" + request.json['recipient_name'] + "', '" + \
         request.json['recipient_phone_number'] + "', '"+ request.json['sender_name'] + "', '" + request.json['sender_phone_number'] +"', " + \
         request.json['destination_packagepoint_id'] + ", "+ request.json['source_packagepoint_id'] + ", '" + request.json['recipient_email'] + "', '" + request.json['sender_email'] + "');"
-    pg_cur.execute(sql)
-    pg_conn.commit()
+    try:
+        pg_cur.execute(sql)
+        pg_conn.commit()
+    except BaseException:
+        pg_conn.rollback()
+        return jsonify("error")
     data = pg_cur.fetchall()
     return jsonify(data)
 
