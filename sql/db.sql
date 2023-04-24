@@ -251,6 +251,21 @@ CREATE TABLE public.routes (
 ALTER TABLE public.routes OWNER TO postgres;
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    courier_id integer,
+    parcelpoint_id integer,
+    email character varying(320) NOT NULL,
+    password_hash character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
 -- Name: vehicles; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -294,6 +309,7 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 1	5.00000	2	1	2	2	2023-04-22 15:54:11
 2	0.50000	1	3	4	1	\N
 3	1.20000	2	5	6	2	\N
+4	0.20000	2	7	8	1	\N
 \.
 
 
@@ -306,6 +322,7 @@ COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM st
 2	1	2	2023-04-22 12:53:58
 3	2	2	2023-04-23 18:03:41.04
 4	3	1	2023-04-23 18:33:55.79
+5	4	2	2023-04-24 17:09:52.81
 \.
 
 
@@ -330,6 +347,8 @@ COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 4	Radosław Cegła	321654876	
 5	Tomasz Misztal	123456123	
 6	Jan Nowak	568901233	
+7			
+8			
 \.
 
 
@@ -348,6 +367,14 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 
 COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_id, completed, source_parcelpoint_id) FROM stdin;
 1	2023-04-21 23:40:19	2	1	1	t	1
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (id, courier_id, parcelpoint_id, email, password_hash) FROM stdin;
 \.
 
 
@@ -422,6 +449,22 @@ ALTER TABLE ONLY public.routepackages
 
 ALTER TABLE ONLY public.routes
     ADD CONSTRAINT routes_pk PRIMARY KEY (id);
+
+
+--
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
+
+
+--
+-- Name: users users_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pk PRIMARY KEY (id);
 
 
 --
@@ -526,6 +569,22 @@ ALTER TABLE ONLY public.routes
 
 ALTER TABLE ONLY public.routes
     ADD CONSTRAINT routes_vehicles FOREIGN KEY (vehicle_id) REFERENCES public.vehicles(id);
+
+
+--
+-- Name: users users_couriers; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_couriers FOREIGN KEY (courier_id) REFERENCES public.couriers(id);
+
+
+--
+-- Name: users users_parcelpoints; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_parcelpoints FOREIGN KEY (parcelpoint_id) REFERENCES public.parcelpoints(id);
 
 
 --

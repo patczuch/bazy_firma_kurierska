@@ -1,1 +1,1 @@
-select * from packagetrackinghistory(1)
+select * from packagetrackinghistory(1);

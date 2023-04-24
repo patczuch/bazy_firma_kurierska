@@ -22,7 +22,7 @@ export function Tracking() {
                     <input style={{margin: '0.5em'}} type='submit' className="button **is-large is-success is-rounded**" value='Szukaj'/>
         </form>
         <div style = {{padding: '1em', margin: '1em', border: package_searched ? '2px solid darkseagreen' : 'none', borderRadius: '2em'}}>
-            {package_history.map((el,i) => 
+            {package_history == undefined ? "" : package_history.map((el,i) => 
             <div key = {"tracking_history_container_"+i} style = {{borderTop: i != 0 ? '1px solid lightgray': 'none'}} className="columns">
                 <div className="column" style={{padding : '1em'}} key = {"tracking_history_"+i+"_"+0}> 
                     {el[0]} 
@@ -32,7 +32,7 @@ export function Tracking() {
                 </div>
             </div>
             )}
-            {package_history.length == 0 && package_searched ? "Nie znaleziono przesyłki z takim numerem!" : ""}
+            {package_history == undefined || package_history.length == 0 && package_searched ? "Nie znaleziono przesyłki z takim numerem!" : ""}
         </div>
         </div>;
 }
