@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import APIService from "./APIService"; 
+import { useNavigate } from "react-router-dom";
 
 export const Navbar = (props) => {
   const [isOpen, setOpen] = useState(false);
 
+  const navigate = useNavigate()
+
   const logout=(event)=>{ 
     event.preventDefault()
-    APIService.logout(props)
+    APIService.logout(props, navigate)
   }
 
   return (
@@ -44,33 +47,37 @@ export const Navbar = (props) => {
               Śledzenie przesyłki
             </NavLink>
 
+            {props.user_parcelpoint_id ? 
             <NavLink
               className="navbar-item"
               to="/new_package"
             >
               Nowa przesyłka
-            </NavLink>
+            </NavLink> : "" }
 
+            {props.user_parcelpoint_id ? 
             <NavLink
               className="navbar-item"
               to="/register_pickup"
             >
               Zarejestruj odbiór
-            </NavLink>
+            </NavLink> : "" }
 
+            {props.user_parcelpoint_id ? 
             <NavLink
               className="navbar-item"
               to="/new_route"
             >
               Nowa trasa
-            </NavLink>
+            </NavLink> : "" }
 
+            {props.user_courier_id ? 
             <NavLink
               className="navbar-item"
               to="/finish_route"
             >
-              Zakończ trasę
-            </NavLink>
+              Moje trasy
+            </NavLink> : "" }
           </div>
 
           {!props.token && props.token!=="" &&props.token!== undefined ? 
@@ -98,15 +105,15 @@ export const Navbar = (props) => {
           </div> : 
           <div className="navbar-end">
             <div className="navbar-item">
-              {props.email}
+              {props.user_email}
               </div>
-          <div className="navbar-item">
-            <div className="buttons">
-              <a className="button is-white" onClick={logout}>
-                  Wyloguj
-              </a>
+            <div className="navbar-item">
+              <div className="buttons">
+                <a className="button is-white" onClick={logout}>
+                    Wyloguj
+                </a>
+              </div>
             </div>
-          </div>
           </div>
           }
         </div>

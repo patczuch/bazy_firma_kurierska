@@ -30,7 +30,7 @@ if __name__ == '__main__':
 def login():
     data = request.json
     
-    pg_cur.execute("SELECT id,email,password_hash FROM users WHERE email=%s", (data['email'], ))
+    pg_cur.execute("SELECT id,email,password_hash,courier_id,parcelpoint_id FROM users WHERE email=%s", (data['email'], ))
     user = pg_cur.fetchone()
     pg_conn.commit()
     if not user:
@@ -44,7 +44,9 @@ def login():
     access_token = create_access_token(identity=user[0])
     user_data = {
         "id": user[0],
-        "email": user[1]
+        "email": user[1],
+        "courier_id": user[3],
+        "parcelpoint_id": user[4]
     }
     return jsonify({"access_token": access_token, "user": user_data}), 200
 

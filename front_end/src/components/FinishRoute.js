@@ -1,7 +1,11 @@
 import React, {useState, useEffect, Component} from "react";
-import APIService from './APIService'
+import { Navigate } from 'react-router-dom';
 
-export function FinishRoute() {
+export function FinishRoute(props) {
+    if (!props.user_courier_id) {
+        return <Navigate to="/" replace />;
+      }
+
     return <div>
         zakończ trasę
         </div>;

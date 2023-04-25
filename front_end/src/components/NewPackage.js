@@ -1,5 +1,6 @@
 import React, {useState, useEffect, Component} from "react";
 import APIService from '../components/APIService'
+import { Navigate } from 'react-router-dom';
 
 export function NewPackage(props) {
     const [weight, set_weight] = useState('')
@@ -9,7 +10,7 @@ export function NewPackage(props) {
     const [sender_name, set_sender_name] = useState('')
     const [sender_phone_number, set_sender_phone_number] = useState('')
     const [destination_packagepoint_id, set_destination_packagepoint_id] = useState('')
-    const [source_packagepoint_id, set_source_packagepoint_id] = useState('')
+    const [source_packagepoint_id, set_source_packagepoint_id] = useState(props.user_parcelpoint_id)
     const [recipient_email, set_recipient_email] = useState('')
     const [sender_email, set_sender_email] = useState('')
 
@@ -24,6 +25,10 @@ export function NewPackage(props) {
                 alert("Wystąpił błąd. Paczka nie została zarejestrowana.")
         })
         .catch(error => console.log('error',error))
+      }
+
+      if (!props.user_parcelpoint_id) {
+        return <Navigate to="/" replace />;
       }
 
     return <div style = {{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>

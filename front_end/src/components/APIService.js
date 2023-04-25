@@ -35,11 +35,11 @@ export default class APIService{
           .then(response => response.json())
           .then(data => {
             const { access_token, user } = data;
-            if (access_token != undefined)
+            if (access_token !== undefined)
             {
                 props.setToken(access_token)
-                props.setUser_id(user.id)
-                props.setEmail(user.email)
+                props.setUser(user.id,user.email,user.courier_id,user.parcelpoint_id)
+                //console.log(user.id, user.email, user.courier_id, user.parcelpoint_id)
                 navigate('/', { replace: true })
             }
             else
@@ -56,7 +56,7 @@ export default class APIService{
           })
           .then(response => response.json())
           .then(data => {
-            if (data['error'] == undefined)
+            if (data['error'] === undefined)
             {
                 alert("Pomyślnie zarejestrowano!")
                 navigate('/login', { replace: true })
@@ -68,7 +68,7 @@ export default class APIService{
         }
         
 
-    static logout(props){
+    static logout(props, navigate){
         /* return fetch('http://' + this.host + ':' + this.port + '/logout',{
             'method':'POST'
         })
@@ -78,8 +78,8 @@ export default class APIService{
             .catch(error => console.log(error))
         }    */
         props.removeToken()
-        props.removeUser_id()
-        props.removeEmail()
+        props.removeUser()
+        navigate('/', { replace: true })
 }
 }
 

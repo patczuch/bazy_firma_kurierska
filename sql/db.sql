@@ -418,8 +418,7 @@ CREATE TABLE public.couriers (
     id integer NOT NULL,
     first_name character varying(50) NOT NULL,
     last_name character varying(50) NOT NULL,
-    phone_number character varying(20) NOT NULL,
-    email character varying(320) NOT NULL
+    phone_number character varying(20) NOT NULL
 );
 
 
@@ -546,6 +545,28 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO postgres;
 
 --
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
 -- Name: vehicles; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -562,11 +583,18 @@ CREATE TABLE public.vehicles (
 ALTER TABLE public.vehicles OWNER TO postgres;
 
 --
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
 -- Data for Name: couriers; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.couriers (id, first_name, last_name, phone_number, email) FROM stdin;
-1	Dawid	Dąbrowski	123789456	ddabrowski@gmail.com
+COPY public.couriers (id, first_name, last_name, phone_number) FROM stdin;
+1	Dawid	Dąbrowski	123789456
 \.
 
 
@@ -664,6 +692,10 @@ COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_
 --
 
 COPY public.users (id, courier_id, parcelpoint_id, email, password_hash) FROM stdin;
+4	\N	\N	kurier2@gmail.com	$2b$12$ofAYapQ8.So0TefzFUkFy.h79zR9t/wPmv8zAt839/j7B9/jL7kCC
+3	1	\N	kurier1@gmail.com	$2b$12$zN3YCuotJhhvDuVrNZvW/uX1nCiMCmKRnTJqD7tp/ih3vxQiXuQX2
+7	\N	1	punktpaczkowy1@gmail.com	$2b$12$3mSwizx/ceLy/UzShzXoXuauI3Xb3330uL58gIxDH.myLgVepaX9u
+6	1	2	wszystko@gmail.com	$2b$12$5gMtzSwfKmYnqoTz0.jnnuLqhb9.KFJqaIDkgBcY.jXK0ROTdx9wq
 \.
 
 
@@ -675,6 +707,13 @@ COPY public.vehicles (id, registration_plate, dimension_x, dimension_y, dimensio
 1	KRA 81TL	500.00000	228.00000	196.00000	10000.50000
 2	K2 AK47	700.00000	150.00000	270.00000	17777.00000
 \.
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 1, false);
 
 
 --
