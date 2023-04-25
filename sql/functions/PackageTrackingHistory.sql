@@ -1,20 +1,20 @@
-create or replace function PackageTrackingHistory (
-  _package_id int
-)
-	returns table (
-		"time" timestamp,
-		description varchar
-	)
-	language plpgsql
-as $$
+create or replace function packagetrackinghistory(_package_id integer)
+    returns TABLE("time" timestamp without time zone, description character varying)
+    language plpgsql
+as
+$$
 begin
-	if (NOT EXISTS (select * from packages where id = _package_id)) then
-        	RAISE unique_violation USING MESSAGE = 'Package with id ' || _package_id || ' doesnt exist!';
-    	end if;
+    if (NOT EXISTS (select * from packages where id = _package_id)) then
+        RAISE unique_violation USING MESSAGE = 'Package with id ' || _package_id || ' doesnt exist!';
+    end if;
 	return query
 		(
 		select
-			pps.time, ('Przyjęto w oddziale ' || pps.parcelpoint_id)::varchar
+			pps.time,
+			CASE WHEN pps.parcelpoint_id = (select destination_packagepoint_id from packages where id = _package_id) THEN
+			    ('Gotowa do odbioru w oddziale ' || pps.parcelpoint_id)::varchar
+                ELSE ('Przyjęto w oddziale ' || pps.parcelpoint_id)::varchar
+		    END
 		from
 			parcelpointpackages pps
 		where
@@ -36,4 +36,7 @@ begin
             p.pickedup_time is not null
 		)
 	    order by time;
-end;$$
+end;
+$$;
+
+alter function packagetrackinghistory(integer) owner to postgres;

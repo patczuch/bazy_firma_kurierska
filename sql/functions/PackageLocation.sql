@@ -1,4 +1,4 @@
-create function packagelocation(_package_id integer)
+create  or replace function packagelocation(_package_id integer)
     returns TABLE(parcelpointid integer)
     language plpgsql
 as

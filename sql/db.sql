@@ -47,6 +47,50 @@ COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
 
 
 --
+-- Name: addpackagedimension(character varying, numeric, numeric, numeric); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.addpackagedimension(_name character varying, _dimx numeric, _dimy numeric, _dimz numeric) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+declare
+    _dimensionID integer := (select max(id) from packagedimensions) + 1;
+begin
+    if (length(_name) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Name cant be empty !';
+    end if;
+
+    if (_dimX <= 0) then
+        RAISE unique_violation USING MESSAGE = 'X dimension must be positive !';
+    end if;
+
+    if (_dimY <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Y dimension must be positive !';
+    end if;
+
+    if (_dimZ <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Z dimension must be positive !';
+    end if;
+
+    if(exists(select id from packagedimensions d where dimension_y = _dimY and dimension_x = _dimX and dimension_z = _dimZ)) then
+        RAISE unique_violation USING MESSAGE = 'Package dimension with those dimensions exists !';
+    end if;
+
+    if(exists(select id from packagedimensions d where d.name = _name)) then
+        RAISE unique_violation USING MESSAGE = 'Package dimension with this name exists !';
+    end if;
+
+    insert into packagedimensions(id, name, dimension_x, dimension_y, dimension_z)
+        values (_dimensionID, _name, _dimX, _dimY, _dimZ);
+
+    return _dimensionID;
+end;
+$$;
+
+
+ALTER FUNCTION public.addpackagedimension(_name character varying, _dimx numeric, _dimy numeric, _dimz numeric) OWNER TO postgres;
+
+--
 -- Name: addroute(timestamp without time zone, integer, integer, integer, integer, integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -79,11 +123,11 @@ begin
         RAISE unique_violation USING MESSAGE = 'Courier with id ' || _courierID || ' doesnt exist!';
     end if;
 
-    if (EXISTS (select * from routes r where r.courier_id = _courierID and r.time = _time)) then
+    if (EXISTS (select * from routes r where r.courier_id = _courierID and date(r.time) = date(_time) and r.completed = false)) then
         RAISE unique_violation USING MESSAGE = 'Courier with id ' || _courierID || ' has planned route on this time!';
     end if;
 
-    if (EXISTS (select * from routes r where r.vehicle_id = _vehicleID and r.time = _time)) then
+    if (EXISTS (select * from routes r where r.vehicle_id = _vehicleID and date(r.time) = date(_time) and r.completed = false)) then
         RAISE unique_violation USING MESSAGE = 'Vehicle with id ' || _vehicleID || ' has planned route on this time!';
     end if;
 
@@ -121,6 +165,91 @@ $$;
 
 
 ALTER FUNCTION public.addroute(_time timestamp without time zone, _sourceid integer, _destinationid integer, _vehicleid integer, _courierid integer, _packcagesid integer[]) OWNER TO postgres;
+
+--
+-- Name: addvehicle(character varying, numeric, numeric, numeric, numeric); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.addvehicle(_registrationplate character varying, _dimx numeric, _dimy numeric, _dimz numeric, _maxweight numeric) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+declare
+    _vehicleID integer := (select max(id) from vehicles) + 1;
+begin
+    if (length(_registrationPlate) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Registration plate cant be empty !';
+    end if;
+
+    if (_dimX <= 0) then
+        RAISE unique_violation USING MESSAGE = 'X dimension must be positive !';
+    end if;
+
+    if (_dimY <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Y dimension must be positive !';
+    end if;
+
+    if (_dimZ <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Z dimension must be positive !';
+    end if;
+
+     if (_maxWeight <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Max weight must be positive !';
+    end if;
+
+    if(exists(select id from vehicles d where d.registration_plate = _registrationPlate)) then
+        RAISE unique_violation USING MESSAGE = 'Vehicle with this registration plate exists !';
+    end if;
+
+    insert into vehicles (id, registration_plate, dimension_x, dimension_y, dimension_z, max_weight)
+        values (_vehicleID, _registrationPlate, _dimX, _dimY, _dimZ, _maxWeight);
+
+    return _vehicleID;
+end;
+$$;
+
+
+ALTER FUNCTION public.addvehicle(_registrationplate character varying, _dimx numeric, _dimy numeric, _dimz numeric, _maxweight numeric) OWNER TO postgres;
+
+--
+-- Name: completeroute(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.completeroute(_routeid integer) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+declare
+    _pacID integer;
+    _destinationID integer;
+    _pppID integer := (select max(id) from parcelpointpackages) + 1;
+begin
+    if (NOT EXISTS (select * from routes where id = _routeID)) then
+        RAISE unique_violation USING MESSAGE = 'Route with id ' || _routeID || ' doesnt exist!';
+    end if;
+
+    if (EXISTS (select * from routes where id = _routeID and completed = true)) then
+        RAISE unique_violation USING MESSAGE = 'Route with id ' || _routeID || ' is already completed !';
+    end if;
+
+    if(select r.time from routes r where r.id = _routeID) > now() then
+        RAISE unique_violation USING MESSAGE = 'Route with id ' || _routeID || ' hanst started!';
+    end if;
+
+    _destinationID := (select r.destination_parcelpoint_id from routes r where r.id = _routeID);
+
+    update routes set completed = true where id = _routeID;
+
+    for _pacID in (select rp.package_id from routepackages rp where rp.route_id = _routeID) loop
+        insert into parcelpointpackages(id, package_id, parcelpoint_id, time)
+        values (_pppID ,_pacID, _destinationID, now());
+        _pppID := _pppID + 1;
+    end loop;
+
+    return _routeID;
+end;
+$$;
+
+
+ALTER FUNCTION public.completeroute(_routeid integer) OWNER TO postgres;
 
 --
 -- Name: packagelocation(integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -197,6 +326,31 @@ $$;
 
 
 ALTER FUNCTION public.packagetrackinghistory(_package_id integer) OWNER TO postgres;
+
+--
+-- Name: pickuppackage(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.pickuppackage(_packageid integer) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+begin
+    if (NOT EXISTS (select * from packages where id = _packageId)) then
+        RAISE unique_violation USING MESSAGE = 'Package with id ' || _packageId || ' doesnt exist!';
+    end if;
+
+    if( select p.destination_packagepoint_id from packages p where id = _packageId) != packagelocation(_packageId) then
+        RAISE unique_violation USING MESSAGE = 'Package cant be picked up, beacuse it hasnt arrived to destination package point !';
+    end if;
+
+    update packages set pickedup_time = now() where id = _packageId;
+
+    return _packageId;
+end;
+$$;
+
+
+ALTER FUNCTION public.pickuppackage(_packageid integer) OWNER TO postgres;
 
 --
 -- Name: registerpackage(numeric, integer, character varying, character varying, character varying, character varying, integer, integer, character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
@@ -424,6 +578,7 @@ COPY public.packagedimensions (id, name, dimension_x, dimension_y, dimension_z) 
 1	Paczka S	8.00000	38.00000	64.00000
 2	Paczka M	19.00000	46.00000	80.00000
 3	Paczka L	41.00000	58.00000	100.00000
+4	Paczka XL	67.00000	77.00000	127.00000
 \.
 
 
@@ -435,7 +590,7 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 2	0.50000	1	3	4	1	\N
 3	1.20000	2	5	6	2	\N
 4	0.20000	2	7	8	1	\N
-1	5.00000	2	1	2	2	\N
+1	5.00000	2	1	2	2	2023-04-25 10:25:46.795572
 \.
 
 
@@ -448,6 +603,9 @@ COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM st
 3	2	2	2023-04-23 18:03:41.04
 4	3	1	2023-04-23 18:33:55.79
 5	4	2	2023-04-24 17:09:52.81
+6	2	1	2023-04-25 09:57:35.609408
+7	4	1	2023-04-25 09:57:35.609408
+8	1	2	2023-04-25 10:25:43.317601
 \.
 
 
@@ -485,6 +643,8 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 1	1
 2	2
 2	4
+3	2
+3	4
 \.
 
 
@@ -493,8 +653,9 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 --
 
 COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_id, completed, source_parcelpoint_id) FROM stdin;
+2	2023-04-24 10:40:19	1	1	1	t	2
+3	2023-04-26 10:40:19	2	1	1	f	1
 1	2023-04-21 23:40:19	2	1	1	t	1
-2	2023-04-25 23:40:19	1	1	1	f	2
 \.
 
 
@@ -511,7 +672,8 @@ COPY public.users (id, courier_id, parcelpoint_id, email, password_hash) FROM st
 --
 
 COPY public.vehicles (id, registration_plate, dimension_x, dimension_y, dimension_z, max_weight) FROM stdin;
-1	KRA81TL	500.00000	228.00000	196.00000	10000.50000
+1	KRA 81TL	500.00000	228.00000	196.00000	10000.50000
+2	K2 AK47	700.00000	150.00000	270.00000	17777.00000
 \.
 
 

@@ -1,4 +1,4 @@
-create function addRoute(_time timestamp without time zone, _sourceID integer, _destinationID integer,
+create  or replace function addRoute(_time timestamp without time zone, _sourceID integer, _destinationID integer,
     _vehicleID integer, _courierID integer, _packcagesID integer[])
     returns integer
     language plpgsql
@@ -30,11 +30,11 @@ begin
         RAISE unique_violation USING MESSAGE = 'Courier with id ' || _courierID || ' doesnt exist!';
     end if;
 
-    if (EXISTS (select * from routes r where r.courier_id = _courierID and r.time = _time)) then
+    if (EXISTS (select * from routes r where r.courier_id = _courierID and date(r.time) = date(_time) and r.completed = false)) then
         RAISE unique_violation USING MESSAGE = 'Courier with id ' || _courierID || ' has planned route on this time!';
     end if;
 
-    if (EXISTS (select * from routes r where r.vehicle_id = _vehicleID and r.time = _time)) then
+    if (EXISTS (select * from routes r where r.vehicle_id = _vehicleID and date(r.time) = date(_time) and r.completed = false)) then
         RAISE unique_violation USING MESSAGE = 'Vehicle with id ' || _vehicleID || ' has planned route on this time!';
     end if;
 
@@ -71,3 +71,4 @@ end;
 $$;
 
 alter function addRoute(timestamp without time zone, integer, integer, integer,  integer,  integer[]) owner to postgres;
+
