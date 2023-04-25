@@ -13,10 +13,13 @@ export default class APIService{
     .catch(error => console.log(error))
     }
 
-    static register_package(body){
+    static register_package(body, token){
         return fetch('http://' + this.host + ':' + this.port + '/new_package',{
             'method':'POST',
-            headers : {'Content-Type':'application/json'},
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
             body:JSON.stringify(body)
     })
     .then(response => response.json())
@@ -31,9 +34,12 @@ export default class APIService{
           })
           .then(response => response.json())
           .then(data => {
-            if (data['access_token'] != undefined)
+            const { access_token, user } = data;
+            if (access_token != undefined)
             {
-                props.setToken(data['access_token'])
+                props.setToken(access_token)
+                props.setUser_id(user.id)
+                props.setEmail(user.email)
                 navigate('/', { replace: true })
             }
             else
@@ -42,15 +48,39 @@ export default class APIService{
           .catch(error => console.log(error))
         }
 
+    static register(email, password, props, navigate){
+        return fetch('http://' + this.host + ':' + this.port + '/register',{
+            'method':'POST',
+            headers : {'Content-Type':'application/json'},
+            body:JSON.stringify({email, password})
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data['error'] == undefined)
+            {
+                alert("Pomyślnie zarejestrowano!")
+                navigate('/login', { replace: true })
+            }
+            else
+                alert("Wystąpił błąd! Nie zarejestrowano")
+          })
+          .catch(error => console.log(error))
+        }
+        
+
     static logout(props){
-         return fetch('http://' + this.host + ':' + this.port + '/logout',{
+        /* return fetch('http://' + this.host + ':' + this.port + '/logout',{
             'method':'POST'
         })
             .then(response => {
             props.removeToken()
         })
             .catch(error => console.log(error))
-        }    
+        }    */
+        props.removeToken()
+        props.removeUser_id()
+        props.removeEmail()
+}
 }
 
     /*const [parcelpoints, setParcelpoints] = useState('inital text');

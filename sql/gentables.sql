@@ -83,7 +83,7 @@ CREATE TABLE Routes (
 
 -- Table: Users
 CREATE TABLE Users (
-    id int  NOT NULL,
+    id SERIAL,
     courier_id int  NULL,
     parcelpoint_id int  NULL,
     email varchar(320)  NOT NULL,

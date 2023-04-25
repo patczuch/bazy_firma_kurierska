@@ -76,8 +76,13 @@ export const Navbar = (props) => {
           {!props.token && props.token!=="" &&props.token!== undefined ? 
           <div className="navbar-end">
             <div className="navbar-item">
-              <div className="buttons">
-                <a className="button is-white">Rejestracja</a>
+            <div className="buttons">
+                  <NavLink
+                    className="button is-white"
+                    to="/register"
+                  >
+                  Rejestracja
+                  </NavLink>
               </div>
             </div>
             <div className="navbar-item">
@@ -92,6 +97,9 @@ export const Navbar = (props) => {
             </div>
           </div> : 
           <div className="navbar-end">
+            <div className="navbar-item">
+              {props.email}
+              </div>
           <div className="navbar-item">
             <div className="buttons">
               <a className="button is-white" onClick={logout}>

@@ -1,7 +1,7 @@
 import React, {useState, useEffect, Component} from "react";
 import APIService from '../components/APIService'
 
-export function NewPackage() {
+export function NewPackage(props) {
     const [weight, set_weight] = useState('')
     const [dimensions_id, set_dimensions_id] = useState('')
     const [recipient_name, set_recipient_name] = useState('')
@@ -16,9 +16,9 @@ export function NewPackage() {
     const handle_submit=(event)=>{ 
         event.preventDefault()
         APIService.register_package({weight, dimensions_id, recipient_name, recipient_phone_number, sender_name, sender_phone_number, 
-            destination_packagepoint_id, source_packagepoint_id, recipient_email, sender_email})
+            destination_packagepoint_id, source_packagepoint_id, recipient_email, sender_email},props.token)
         .then((response) => {
-            if (response != "error" && response != undefined)
+            if (response.ok)
                 alert("Paczka zarejestrowana. ID: " + response)
             else
                 alert("Wystąpił błąd. Paczka nie została zarejestrowana.")
