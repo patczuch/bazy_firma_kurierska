@@ -47,6 +47,48 @@ COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
 
 
 --
+-- Name: addcourier(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.addcourier(_firstname character varying, _lastname character varying, _phonenumber character varying) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+declare
+    _id integer := (select max(id) from couriers) + 1;
+
+begin
+
+    if (length(_firstname) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Couriers firstname cant be empty!';
+    end if;
+
+    if (length(_lastname) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Couriers lastname cant be empty!';
+    end if;
+
+    if (length(_phoneNumber) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Couriers phone number cant be empty!';
+    end if;
+
+
+    if (exists(select * from couriers where phone_number = _phoneNumber)) then
+        RAISE unique_violation USING MESSAGE = 'Courier with this phone number already exists!';
+    end if;
+
+
+    insert into couriers(id, first_name, last_name, phone_number)
+        values (_id, _firstname, _lastname, _phoneNumber);
+
+    return _id;
+
+end;
+
+$$;
+
+
+ALTER FUNCTION public.addcourier(_firstname character varying, _lastname character varying, _phonenumber character varying) OWNER TO postgres;
+
+--
 -- Name: addpackagedimension(character varying, numeric, numeric, numeric); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -89,6 +131,59 @@ $$;
 
 
 ALTER FUNCTION public.addpackagedimension(_name character varying, _dimx numeric, _dimy numeric, _dimz numeric) OWNER TO postgres;
+
+--
+-- Name: addparcelpoint(character varying, character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.addparcelpoint(_name character varying, _city character varying, _street character varying, _housenumber character varying, _apartmentnumber character varying) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+declare
+    _id integer := (select max(id) from parcelpoints) + 1;
+
+begin
+
+    if (length(_name) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Parcel point name cant be empty!';
+    end if;
+
+    if (length(_city) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'City name cant be empty!';
+    end if;
+
+    if (length(_street) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Street name cant be empty!';
+    end if;
+
+    if (length(_houseNumber) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'House number cant be empty!';
+    end if;
+
+
+    if (exists(select * from parcelpoints where name = _name)) then
+        RAISE unique_violation USING MESSAGE = 'Parcel point with this name already exists!';
+    end if;
+
+    if (exists(select * from parcelpoints where city = _city AND street = _street AND
+                                                house_number = _houseNumber AND
+                                                apartment_number = _apartmentNumber)) then
+
+        RAISE unique_violation USING MESSAGE = 'Parcel point at this address already exists!';
+    end if;
+
+
+    insert into parcelpoints(id, name, city, street, house_number, apartment_number)
+        values (_id, _name, _city, _street, _houseNumber, _apartmentNumber);
+
+    return _id;
+
+end;
+
+$$;
+
+
+ALTER FUNCTION public.addparcelpoint(_name character varying, _city character varying, _street character varying, _housenumber character varying, _apartmentnumber character varying) OWNER TO postgres;
 
 --
 -- Name: addroute(timestamp without time zone, integer, integer, integer, integer, integer[]); Type: FUNCTION; Schema: public; Owner: postgres
@@ -250,6 +345,35 @@ $$;
 
 
 ALTER FUNCTION public.completeroute(_routeid integer) OWNER TO postgres;
+
+--
+-- Name: getcontentsofparcelpoint(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.getcontentsofparcelpoint(_parcelpointid integer) RETURNS TABLE(waiting_package_id integer)
+    LANGUAGE plpgsql
+    AS $$
+begin
+
+    if (not exists(select * from parcelpoints where id = _parcelPointID)) then
+        RAISE unique_violation USING MESSAGE = 'Parcel point with this ID dont exists!';
+    end if;
+
+    return query
+        select T1.package_id
+        from (
+            select package_id, max(time) as last_update
+            from parcelpointpackages
+            group by package_id
+        ) as T1
+        inner join parcelpointpackages as PPP on T1.package_id = PPP.package_id
+        where T1.last_update = PPP.time and PPP.parcelpoint_id = _parcelPointID;
+
+end;
+$$;
+
+
+ALTER FUNCTION public.getcontentsofparcelpoint(_parcelpointid integer) OWNER TO postgres;
 
 --
 -- Name: packagelocation(integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -480,7 +604,7 @@ CREATE TABLE public.parcelpoints (
     city character varying(100) NOT NULL,
     street character varying(100) NOT NULL,
     house_number character varying(10) NOT NULL,
-    apartment_humber character varying(10)
+    apartment_number character varying(10)
 );
 
 
@@ -641,7 +765,7 @@ COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM st
 -- Data for Name: parcelpoints; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.parcelpoints (id, name, city, street, house_number, apartment_humber) FROM stdin;
+COPY public.parcelpoints (id, name, city, street, house_number, apartment_number) FROM stdin;
 1	Punkt Krakowski	Kraków	Jasnogórska	22	\N
 2	Punkt Warszawski	Warszawa	Złota	44	51
 \.
