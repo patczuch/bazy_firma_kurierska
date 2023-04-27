@@ -25,3 +25,4 @@ W ramach projektu chcielibyśmy stworzyć stronę internetową dla firmy kuriers
 - dokumentacja w jednym pliku (w miarę liniowa - bez linków itp.)<br />
 - zarysować architekturę backendu (Python + Flask) w dokumentacji<br />
 - testy do backendu w Postman'ie<br />
+- wnioski czy to dobrze ze zrobilismy tak ze procedury sa w postgresie i tylko je wywolujemy przez backend
