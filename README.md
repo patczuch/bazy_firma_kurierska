@@ -16,7 +16,7 @@ W ramach projektu chcielibyśmy stworzyć stronę internetową dla firmy kuriers
 
 <img src="schemat.png" alt="Schemat">
 
-<h3>Do poprawy / uzupełnienia (ze stanu na 27 kwietnia)<br /> </h3>
+<h3>Do poprawy / uzupełnienia (stan na 27 kwietnia)<br /> </h3>
 - przedstawić opis problemu na początku README<br />
 - zastanowić się nad podejściem do przechowywania danych w PersonInfo<br />
 - dodać spis (listę) funkcji (np. z linkami do kodu)<br />
