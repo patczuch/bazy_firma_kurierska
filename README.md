@@ -16,12 +16,12 @@ W ramach projektu chcielibyśmy stworzyć stronę internetową dla firmy kuriers
 
 <img src="schemat.png" alt="Schemat">
 
-<h3>Do poprawy / uzupełnienia (ze stanu na 27 kwietnia):<br /> </h3>
-- przedstawić opis problemu na początku README
-- zastanowić się nad podejściem do przechowywania danych w PersonInfo
-- dodać spis (listę) funkcji (np. z linkami do kodu)
-- dodawać komentarze do kodu sql
-- opisać kluczowe tabele i funkcje (ale jak coś jest oczywiste to nie mieszać)
-- dokumentacja w jednym pliku (w miarę liniowa - bez linków itp.)
-- zarysować architekturę backendu (Python + Flask) w dokumentacji
-- testy do backendu w Postman'ie
+<h3>Do poprawy / uzupełnienia (ze stanu na 27 kwietnia)<br /> </h3>
+- przedstawić opis problemu na początku README<br />
+- zastanowić się nad podejściem do przechowywania danych w PersonInfo<br />
+- dodać spis (listę) funkcji (np. z linkami do kodu)<br />
+- dodawać komentarze do kodu sql<br />
+- opisać kluczowe tabele i funkcje (ale jak coś jest oczywiste to nie mieszać)<br />
+- dokumentacja w jednym pliku (w miarę liniowa - bez linków itp.)<br />
+- zarysować architekturę backendu (Python + Flask) w dokumentacji<br />
+- testy do backendu w Postman'ie<br />
