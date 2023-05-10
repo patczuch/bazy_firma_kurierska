@@ -1,6 +1,8 @@
 create function addParcelPoint (_name varchar, _city varchar, _street varchar,
                                 _houseNumber varchar, _apartmentNumber varchar) returns integer
 language plpgsql
+-- dodaje nowy punkt paczkowy, przyjmuje nazwe oraz kolejne częći adresu, zwraca nowe id
+
 as
 $$
 declare
@@ -29,6 +31,7 @@ begin
         RAISE unique_violation USING MESSAGE = 'Parcel point with this name already exists!';
     end if;
 
+    -- czy w tym miejscu nie ma innego punktu
     if (exists(select * from parcelpoints where city = _city AND street = _street AND
                                                 house_number = _houseNumber AND
                                                 apartment_number = _apartmentNumber)) then
