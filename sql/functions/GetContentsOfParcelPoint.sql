@@ -3,6 +3,7 @@ returns table (
     waiting_package_id integer
 )
 language plpgsql
+-- zwraca tabele id paczek które w danym momencie są w punkcie paczkowym o id z argumentu
 as
 $$
 begin
