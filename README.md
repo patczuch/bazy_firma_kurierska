@@ -23,7 +23,7 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 <h3>Spis funkcji SQL</h3>
 [Dodawanie kuriera](./sql/functions/AddCourier.sql)<br />
 
-<h3>Do poprawy lub uzupełnienia (27 kwietnia 2023)</h3>
+## Do poprawy lub uzupełnienia (27 kwietnia 2023)
 - ~~przedstawić opis problemu na początku README~~<br />
 - zastanowić się nad podejściem do przechowywania danych w PersonInfo<br />
 - dodać spis (listę) funkcji (np. z linkami do kodu)<br />
