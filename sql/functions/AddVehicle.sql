@@ -2,6 +2,7 @@ create  or replace function addVehicle(_registrationPlate varchar(10), _dimX dec
     _dimZ decimal(10, 5), _maxWeight decimal(10, 5))
     returns integer
     language plpgsql
+    -- dodaje nowy pojazd, przyjmuje unikalny numer rejestarcyjny, wymiary oraz maksymalny udźwig, zwraca id 
 as
 $$
 declare
