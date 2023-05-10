@@ -1,6 +1,8 @@
 create  or replace function completeRoute(_routeID integer)
     returns integer
     language plpgsql
+    -- funkcja której używa kurier aby zaznaczyć trasę jako zakończoną, przyjmuje i zwraca jej id, przenosi ona rówież w bazie
+    -- paczki z trasy do docelowego punktu paczkowego
 as
 $$
 declare
