@@ -1,6 +1,7 @@
 create  or replace function packagelocation(_package_id integer)
     returns TABLE(parcelpointid integer)
     language plpgsql
+    -- zwraca obecne miejsce paczki o danym id
 as
 $$
 begin
