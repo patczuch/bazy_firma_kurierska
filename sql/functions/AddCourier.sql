@@ -1,5 +1,6 @@
 create function addCourier (_firstname varchar, _lastname varchar, _phoneNumber varchar) returns integer
     language plpgsql
+    -- dodaje nowego kuriera
 as
 $$
 declare
