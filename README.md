@@ -1,11 +1,11 @@
-<h1>Aplikacja dla firmy kurierskiej  <br /> </h1>
+<h1>Aplikacja dla firmy kurierskiej</h1>
 
-<h3>Skład grupy </h3>
+<h3>Skład grupy</h3>
 Patryk Czuchnowski (patczuch@student.agh.edu.pl) <br />
 Andrzej Wacławik (wajarema@student.agh.edu.pl) <br />
 Michał Pędrak (michalpedrak@student.agh.edu.pl) <br />
 
-<h3>Technologie<br /> </h3>
+<h3>Technologi</h3>
 Baza danych - PostgreSQL <br />
 Backend - Python, Flask  <br />
 Frontend - React
