@@ -2,6 +2,8 @@ create  or replace function addRoute(_time timestamp without time zone, _sourceI
     _vehicleID integer, _courierID integer, _packcagesID integer[])
     returns integer
     language plpgsql
+    -- dodaje nową trase przewozu, przyjmuje czas rozpoczęcia, id startowego oraz końcowego punktu paczkowego, id samochodu oraz kuriera oraz
+    -- tablice id paczek do przewiezienia, zwraca id nowej trasy
 as
 $$
 declare
@@ -38,6 +40,7 @@ begin
         RAISE unique_violation USING MESSAGE = 'Vehicle with id ' || _vehicleID || ' has planned route on this time!';
     end if;
 
+    -- obliczanie wspólnej wagi oraz objętości
     foreach _pacID in array _packcagesID loop
         if (NOT EXISTS (select * from packages where id = _pacID)) then
             RAISE unique_violation USING MESSAGE = 'Package with id ' || _pacID || ' doesnt exist!';
