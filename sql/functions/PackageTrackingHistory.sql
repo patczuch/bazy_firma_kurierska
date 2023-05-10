@@ -1,6 +1,7 @@
 create or replace function packagetrackinghistory(_package_id integer)
     returns TABLE("time" timestamp without time zone, description character varying)
     language plpgsql
+    -- zwraca pełną trase paczki z podziałem na momenty czasowe, przyjmuje id paczki w argumencie
 as
 $$
 begin
