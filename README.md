@@ -24,10 +24,10 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 [Dodawanie kuriera](./sql/functions/AddCourier.sql)<br />
 
 <h3>Do poprawy lub uzupełnienia (27 kwietnia 2023)<br /> </h3>
-~~- przedstawić opis problemu na początku README~~<br />
+- ~~przedstawić opis problemu na początku README~~<br />
 - zastanowić się nad podejściem do przechowywania danych w PersonInfo<br />
 - dodać spis (listę) funkcji (np. z linkami do kodu)<br />
-~~- dodawać komentarze do kodu sql~~<br />
+- ~~dodawać komentarze do kodu sql~~<br />
 - opisać kluczowe tabele i funkcje (ale jak coś jest oczywiste to nie mieszać)<br />
 - dokumentacja w jednym pliku (w miarę liniowa - bez linków itp.)<br />
 - zarysować architekturę backendu (Python + Flask) w dokumentacji<br />
