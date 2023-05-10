@@ -1,5 +1,7 @@
 create function RegisterPackage(_weight numeric, _dimensions_id integer, _recipient_name character varying, _recipient_phone_number character varying, _sender_name character varying, _sender_phone_number character varying, _destination_packagepoint_id integer, _source_packagepoint_id integer, _recipient_email character varying DEFAULT NULL::character varying, _sender_email character varying DEFAULT NULL::character varying) returns integer
     language plpgsql
+    -- funckja do rejestrowania nowej paczki, przyjmuje jej wage, id z tabeli rozmiarów, dane nadawcy oraz odbiorcy, id punktów paczkowych między 
+    -- którymi będzie musiała się przemieścić, zwraca jej id
 as
 $$
 declare
