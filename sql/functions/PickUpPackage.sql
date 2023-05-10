@@ -1,6 +1,7 @@
 create or replace function pickUpPackage(_packageId integer)
     returns integer
     language plpgsql
+    -- funkcja służąca do potwierdzenia odbioru paczki z punktu docelowego, przyjmuje i zwraca jej id
 as
 $$
 begin
