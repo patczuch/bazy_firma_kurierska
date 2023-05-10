@@ -21,7 +21,7 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 <img src="schemat.png" alt="Schemat">
 
 <h3>Spis funkcji SQL</h3>
-1. [Dodawanie kuriera](./sql/functions/AddCourier.sql)
+[Dodawanie kuriera](./sql/functions/AddCourier.sql)<br />
 
 <h3>Do poprawy lub uzupełnienia (27 kwietnia 2023)<br /> </h3>
 + przedstawić opis problemu na początku README<br />
