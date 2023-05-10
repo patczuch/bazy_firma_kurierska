@@ -2,6 +2,7 @@ create  or replace function addPackageDimension(_name varchar(20), _dimX decimal
     _dimZ decimal(10, 5))
     returns integer
     language plpgsql
+    -- dodaje rozmiar paczki, przyjmuje nazwe kodową oraz kolejno 3 wymiary, zwraca nowe id
 as
 $$
 declare
