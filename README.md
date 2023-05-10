@@ -22,11 +22,21 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 
 ## Spis funkcji SQL
 [Dodawanie kuriera](./sql/functions/AddCourier.sql)<br />
+[Dodawanie rozmiaru paczki](./sql/functions/AddPackageDimension.sql)<br />
+[Dodawanie punktu paczkowego](./sql/functions/AddParcelPoint.sql)<br />
+[Dodawania trasy przewozowej](./sql/functions/AddRoute.sql)<br />
+[Dodawanie wehikułu](./sql/functions/AddVehicle.sql)<br />
+[Zarejstrowanie trasy jako ukończona](./sql/functions/CompleteRoute.sql)<br />
+[Lista wszystkich paczek w danym punkcie](./sql/functions/GetContentsOfParcelPoint.sql)<br />
+[Obecna lokalizacja paczki](./sql/functions/PackageLocation.sql)<br />
+[Cała historia podróży paczki](./sql/functions/PackageTrackingHistory.sql)<br />
+[Zarejstrowanie paczki jako odebranej z docelowego punktu](./sql/functions/PickUpPackage.sql)<br />
+[Dodanie nowej paczki](./sql/functions/RegisterPackage.sql)<br />
 
 ## Do poprawy lub uzupełnienia (27 kwietnia 2023)
 - ~~przedstawić opis problemu na początku README~~<br />
 - zastanowić się nad podejściem do przechowywania danych w PersonInfo<br />
-- dodać spis (listę) funkcji (np. z linkami do kodu)<br />
+- ~~dodać spis (listę) funkcji (np. z linkami do kodu)~~<br />
 - ~~dodawać komentarze do kodu sql~~<br />
 - opisać kluczowe tabele i funkcje (ale jak coś jest oczywiste to nie mieszać)<br />
 - dokumentacja w jednym pliku (w miarę liniowa - bez linków itp.)<br />
