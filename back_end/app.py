@@ -32,17 +32,19 @@ if __name__ == '__main__':
 def login():
     data = request.json
     
-    pg_cur.execute("SELECT id,email,password_hash,courier_id,parcelpoint_id FROM users WHERE email=%s", (data['email'], ))
-    user = pg_cur.fetchone()
-    pg_conn.commit()
+    try:
+        pg_cur.execute("SELECT id,email,password_hash,courier_id,parcelpoint_id FROM users WHERE email=%s", (data['email'], ))
+        user = pg_cur.fetchone()
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)})
     if not user:
         return jsonify({"error": "Invalid email"}), 401
 
-    # Check if the user exists
     if not bcrypt.check_password_hash(user[2], data['password']):
         return jsonify({"error": "Invalid password"}), 401
 
-    # Generate an access token and return it along with the user data
     access_token = create_access_token(identity=user[0])
     user_data = {
         "id": user[0],
@@ -56,17 +58,24 @@ def login():
 def register():
     data = request.json
 
-    # Check if the user already exists
-    pg_cur.execute("SELECT * FROM users WHERE email=%s", (data['email'],))
-    existing_user = pg_cur.fetchone()
-    pg_conn.commit()
+    try:
+        pg_cur.execute("SELECT * FROM users WHERE email=%s", (data['email'],))
+        existing_user = pg_cur.fetchone()
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)})
+    
     if existing_user:
         return jsonify({"error": "User already exists"}), 400
 
     password_hash = bcrypt.generate_password_hash(data['password']).decode('utf-8')
-    # Insert the new user into the database
-    pg_cur.execute("INSERT INTO users (email, password_hash) VALUES (%s, %s)", (data['email'], password_hash))
-    pg_conn.commit()
+    try:
+        pg_cur.execute("INSERT INTO users (email, password_hash) VALUES (%s, %s)", (data['email'], password_hash))
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)})
 
     return jsonify({"success": "User registered successfully"}), 201
 
@@ -77,10 +86,10 @@ def get_package_history():
     try:
         pg_cur.execute(sql, (request.json['package_id'],))
         pg_conn.commit()
+        data = pg_cur.fetchall()
     except Exception as e:
         pg_conn.rollback()
         return jsonify({'error': str(e)})
-    data = pg_cur.fetchall()
     return jsonify(data)
 
 @app.route('/parcelpoint_packages', methods=['POST'], strict_slashes=False)
@@ -94,16 +103,38 @@ def get_parcelpoint_packages():
     try:
         pg_cur.execute(sql, (request.json['parcelpoint_id'],))
         pg_conn.commit()
+        data = pg_cur.fetchall()
     except Exception as e:
         pg_conn.rollback()
         return jsonify({'error': str(e)})
-    data = pg_cur.fetchall()
     res = []
     for id in data:
         package_info = get_package_info(id)
         if package_info is not None:
             res.append(package_info)
     return jsonify(res)
+
+@app.route('/package_dimensions', methods=['GET'], strict_slashes=False)
+def get_package_dimensions():
+    try:
+        pg_cur.execute("select id, name, dimension_x, dimension_y, dimension_z from packagedimensions")
+        pg_conn.commit()
+        res = pg_cur.fetchall()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)})
+    return res
+
+@app.route('/parcelpoints', methods=['GET'], strict_slashes=False)
+def get_parcelpoints():
+    try:
+        pg_cur.execute("select id, name, city, street, house_number, apartment_number from parcelpoints")
+        pg_conn.commit()
+        res = pg_cur.fetchall()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)})
+    return res
 
 def get_package_info(id):
     sql = "select weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id from packages where id = %s"
@@ -158,10 +189,10 @@ def new_package():
                             request.json['sender_phone_number'], request.json['destination_packagepoint_id'], request.json['source_packagepoint_id'], request.json['recipient_email'],
                             request.json['sender_email'],))
         pg_conn.commit()
+        data = pg_cur.fetchall()
     except Exception as e:
         pg_conn.rollback()
         return jsonify({'error': str(e)})
-    data = pg_cur.fetchall()
     return jsonify(data)
 
 def authenticate(id):

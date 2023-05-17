@@ -3,6 +3,24 @@ export default class APIService{
     static host = "localhost";
     static port = "5000";
 
+    static get_package_dimensions(){
+        return fetch('http://' + this.host + ':' + this.port + '/package_dimensions',{
+            'method':'GET',
+            headers : {'Content-Type':'application/json'}
+    })
+    .then(response => response.json())
+    .catch(error => console.log(error))
+    }
+
+    static get_parcelpoints(){
+        return fetch('http://' + this.host + ':' + this.port + '/parcelpoints',{
+            'method':'GET',
+            headers : {'Content-Type':'application/json'}
+    })
+    .then(response => response.json())
+    .catch(error => console.log(error))
+    }
+
     static get_package_history(body){
         return fetch('http://' + this.host + ':' + this.port + '/tracking',{
             'method':'POST',
@@ -14,6 +32,7 @@ export default class APIService{
     }
 
     static register_package(body, token){
+        //console.log(JSON.stringify(body))
         return fetch('http://' + this.host + ':' + this.port + '/new_package',{
             'method':'POST',
             headers: {

@@ -352,24 +352,25 @@ ALTER FUNCTION public.completeroute(_routeid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.getcontentsofparcelpoint(_parcelpointid integer) RETURNS TABLE(waiting_package_id integer)
     LANGUAGE plpgsql
-    AS $$
-begin
-
-    if (not exists(select * from parcelpoints where id = _parcelPointID)) then
-        RAISE unique_violation USING MESSAGE = 'Parcel point with this ID dont exists!';
-    end if;
-
-    return query
-        select T1.package_id
-        from (
-            select package_id, max(time) as last_update
-            from parcelpointpackages
-            group by package_id
-        ) as T1
-        inner join parcelpointpackages as PPP on T1.package_id = PPP.package_id
-        where T1.last_update = PPP.time and PPP.parcelpoint_id = _parcelPointID;
-
-end;
+    AS $$
+begin
+
+    if (not exists(select * from parcelpoints where id = _parcelPointID)) then
+        RAISE unique_violation USING MESSAGE = 'Parcel point with this ID dont exists!';
+    end if;
+
+    return query
+        select T1.package_id
+        from (
+            select package_id, max(time) as last_update
+            from parcelpointpackages
+            group by package_id
+        ) as T1
+        inner join parcelpointpackages as PPP on T1.package_id = PPP.package_id
+        inner join packages p on PPP.package_id = p.id
+        where T1.last_update = PPP.time and PPP.parcelpoint_id = _parcelPointID and pickedup_time IS NULL;
+
+end;
 $$;
 
 
@@ -740,21 +741,37 @@ COPY public.packagedimensions (id, name, dimension_x, dimension_y, dimension_z) 
 --
 
 COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id, pickedup_time) FROM stdin;
-2	0.50000	1	3	4	1	\N
 3	1.20000	2	5	6	2	\N
-4	0.20000	2	7	8	1	\N
 1	5.00000	2	1	2	2	2023-04-25 10:25:46.795572
 5	0.10000	1	9	10	2	\N
 6	0.10000	1	11	12	2	\N
 7	0.10000	1	13	14	2	\N
 8	0.10000	1	15	16	2	\N
 9	0.10000	1	17	18	2	\N
-10	0.10000	1	19	20	2	\N
-11	0.30000	1	21	22	2	\N
-12	0.30000	1	23	24	2	\N
-13	0.30000	2	25	26	1	\N
-14	0.30000	2	27	28	1	\N
-15	0.30000	2	29	30	1	\N
+16	0.30000	2	31	32	2	\N
+17	0.10000	1	33	34	2	\N
+18	0.10000	1	35	36	2	\N
+19	0.10000	1	37	38	2	\N
+20	0.10000	1	39	40	2	\N
+21	0.10000	1	41	42	2	\N
+22	0.10000	1	43	44	2	\N
+23	0.10000	1	45	46	2	\N
+24	0.10000	1	47	48	2	\N
+4	0.20000	2	7	8	2	\N
+2	0.50000	1	3	4	2	\N
+11	0.30000	1	21	22	1	\N
+12	0.30000	1	23	24	1	\N
+10	0.10000	1	19	20	1	\N
+13	0.30000	2	25	26	2	\N
+15	0.30000	2	29	30	2	\N
+14	0.30000	2	27	28	2	\N
+25	1.20000	2	49	50	1	\N
+26	0.40000	3	51	52	1	\N
+27	0.40000	4	53	54	1	\N
+28	0.10000	1	55	56	1	\N
+29	0.20000	1	57	58	1	\N
+30	0.30000	1	59	60	1	\N
+31	0.20000	1	61	62	1	\N
 \.
 
 
@@ -781,6 +798,24 @@ COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM st
 17	13	2	2023-05-17 13:25:27.84
 18	14	2	2023-05-17 13:26:46.98
 19	15	2	2023-05-17 14:07:25.49
+20	16	1	2023-05-17 14:28:29.21
+21	17	1	2023-05-17 14:35:32.36
+22	18	1	2023-05-17 14:35:56.55
+23	19	1	2023-05-17 14:35:59.27
+28	24	1	2023-05-17 15:19:01.71
+27	23	1	2023-05-17 14:38:51.33
+24	20	1	2023-05-17 14:36:04.74
+25	21	1	2023-05-17 14:37:53.47
+26	22	1	2023-05-17 14:38:44.57
+29	22	2	2023-05-17 19:00:33
+30	21	2	2023-05-17 19:00:37
+31	25	2	2023-05-17 19:03:36
+32	26	2	2023-05-17 19:16:07.6
+33	27	2	2023-05-17 19:16:11.04
+34	28	2	2023-05-17 19:47:53.81
+35	29	2	2023-05-17 19:48:07.65
+36	30	2	2023-05-17 19:48:11.1
+37	31	2	2023-05-17 19:48:16.45
 \.
 
 
@@ -829,6 +864,38 @@ COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 28	Zenon Nowak	123456789	
 29	Jan Kowalski	987654321	
 30	Zenon Nowak	123456789	
+31	Jan Kowalski	987654321	
+32	Zenon Nowak	123456789	
+33			
+34			
+35			
+36			
+37			
+38			
+39			
+40			
+41			
+42			
+43			
+44			
+45			
+46			
+47			
+48			
+49			
+50			
+51			
+52			
+53			
+54			
+55			
+56			
+57			
+58			
+59			
+60			
+61			
+62			
 \.
 
 
@@ -865,6 +932,7 @@ COPY public.users (id, courier_id, parcelpoint_id, email, password_hash, admin) 
 7	\N	1	punktpaczkowy1@gmail.com	$2b$12$3mSwizx/ceLy/UzShzXoXuauI3Xb3330uL58gIxDH.myLgVepaX9u	f
 4	\N	\N	kurier2@gmail.com	$2b$12$ofAYapQ8.So0TefzFUkFy.h79zR9t/wPmv8zAt839/j7B9/jL7kCC	f
 6	\N	\N	admin@gmail.com	$2b$12$5gMtzSwfKmYnqoTz0.jnnuLqhb9.KFJqaIDkgBcY.jXK0ROTdx9wq	t
+1	\N	2	punktpaczkowy2@gmail.com	$2b$12$e9wEdEA4Ixdm.DYbUdt08.f0cmHYlDhxjHMbr32rcH03AnDqSkdoe	f
 \.
 
 
@@ -882,7 +950,7 @@ COPY public.vehicles (id, registration_plate, dimension_x, dimension_y, dimensio
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 1, false);
+SELECT pg_catalog.setval('public.users_id_seq', 1, true);
 
 
 --

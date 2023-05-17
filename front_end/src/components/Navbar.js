@@ -47,7 +47,7 @@ export const Navbar = (props) => {
               Śledzenie przesyłki
             </NavLink>
 
-            {props.user_parcelpoint_id ? 
+            {props.user_parcelpoint_id && props.user_parcelpoint_id!="null" ? 
             <NavLink
               className="navbar-item"
               to="/new_package"
@@ -55,7 +55,7 @@ export const Navbar = (props) => {
               Nowa przesyłka
             </NavLink> : "" }
 
-            {props.user_parcelpoint_id ? 
+            {props.user_parcelpoint_id && props.user_parcelpoint_id!="null" ? 
             <NavLink
               className="navbar-item"
               to="/register_pickup"
@@ -63,7 +63,7 @@ export const Navbar = (props) => {
               Paczki w punkcie
             </NavLink> : "" }
 
-            {props.user_parcelpoint_id ? 
+            {props.user_parcelpoint_id && props.user_parcelpoint_id!="null"? 
             <NavLink
               className="navbar-item"
               to="/new_route"
@@ -71,7 +71,7 @@ export const Navbar = (props) => {
               Nowa trasa
             </NavLink> : "" }
 
-            {props.user_courier_id ? 
+            {props.user_courier_id && props.user_courier_id!="null"? 
             <NavLink
               className="navbar-item"
               to="/finish_route"
@@ -80,7 +80,7 @@ export const Navbar = (props) => {
             </NavLink> : "" }
           </div>
 
-          {!props.token && props.token!=="" &&props.token!== undefined ? 
+          {!props.token && props.token!=="" &&props.token!== undefined? 
           <div className="navbar-end">
             <div className="navbar-item">
             <div className="buttons">

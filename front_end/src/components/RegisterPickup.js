@@ -26,9 +26,9 @@ export function RegisterPickup(props) {
         <div key = {"packages_container_"+i} style = {{borderTop: i != 0 ? '1px solid lightgray': 'none'}}>
             <div style={{padding : '1em', display: 'table-row'}} key = {"packages_container_"+i+"_"+0}> 
                 <div style= {{display: 'table-cell', width: '5em'}}> Id: {el["id"]} </div> 
-                <div style= {{display: 'table-cell', width: '10em'}}> Waga: {el["weight"]} </div> 
+                <div style= {{display: 'table-cell', width: '10em'}}> Waga: {Math.round(el["weight"]*100)/100}kg </div> 
                 <div style= {{display: 'table-cell', width: '10em'}}> Rozmiar: {el["dimensions_id"]} </div> 
-                <div style= {{display: 'table-cell', width: '10em'}}> Punkt odbioru: {el["destination_packagepoint_id"]} </div> 
+                <div style= {{display: 'table-cell', width: '10em'}}> Punkt docelowy: {el["destination_packagepoint_id"]} </div> 
                 <div style= {{display: 'table-cell', width: '25em'}}>
                   <div style={{display: 'flex', flexDirection: 'column'}}> 
                     <div>Dane nadawcy:</div> 
@@ -46,8 +46,10 @@ export function RegisterPickup(props) {
                   </div> 
                 </div>
                 <div style= {{display: 'table-cell'}}>
-                  <input style={{margin: '0.5em'}} type='button' className="button **is-large is-success is-rounded**" value='Potwierdź odbiór'/>
-                  <input style={{margin: '0.5em'}} type='button' onClick={routeChange} className="button **is-large is-success is-rounded**" value='Wyświetl historię'/>
+                  {el["destination_packagepoint_id"] == props.user_parcelpoint_id ? 
+                    <input style={{margin: '0.5em'}} type='button' className="button **is-large is-success is-rounded**" value='Potwierdź odbiór'/> 
+                  : ""} 
+                 {/*<input style={{margin: '0.5em'}} type='button' onClick={routeChange} className="button **is-large is-success is-rounded**" value='Wyświetl historię'/>*/}
                 </div>
             </div>
         </div>
