@@ -17,6 +17,19 @@ export function RegisterPickup(props) {
         .catch(error => console.log('error',error))
       }
 
+      const confirm_pickup = (id)=>{
+        APIService.pickup_package(id, props.token)
+        .then((response) => {
+          if (response["success"])
+            alert(response["success"]); 
+          else
+            alert(response["error"])
+          window.location.reload(false); 
+          //console.log(response)
+        })
+        .catch(error => console.log('error',error))
+      }
+
     if (!props.user_parcelpoint_id) {
       return <Navigate to="/" replace />;
     }
@@ -47,7 +60,7 @@ export function RegisterPickup(props) {
                 </div>
                 <div style= {{display: 'table-cell'}}>
                   {el["destination_packagepoint_id"] == props.user_parcelpoint_id ? 
-                    <input style={{margin: '0.5em'}} type='button' className="button **is-large is-success is-rounded**" value='Potwierdź odbiór'/> 
+                    <input style={{margin: '0.5em'}} type='button' className="button **is-large is-success is-rounded**" value='Potwierdź odbiór' onClick={() => confirm_pickup({"package_id": el["id"][0]})}/> 
                   : ""} 
                  {/*<input style={{margin: '0.5em'}} type='button' onClick={routeChange} className="button **is-large is-success is-rounded**" value='Wyświetl historię'/>*/}
                 </div>

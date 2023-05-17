@@ -92,6 +92,34 @@ def get_package_history():
         return jsonify({'error': str(e)})
     return jsonify(data)
 
+@app.route('/pickup_package', methods=['POST'], strict_slashes=False)
+@jwt_required()
+def pickup_package():
+    sql = "select parcelpointid from packagelocation(%s)"
+    print(request.json['package_id'])
+    try:
+        pg_cur.execute(sql, (request.json['package_id'],))
+        pg_conn.commit()
+        data = pg_cur.fetchone()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)})
+    
+    
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(data[0]) or data[0] == -1:
+        return jsonify({'error': 'Authentication error!'})
+    
+    sql2 = "select pickuppackage(%s)"
+    try:
+        pg_cur.execute(sql2, (request.json['package_id'],))
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)})
+    
+    return jsonify({'success':'Succesfuly registered pickup'})
+
 @app.route('/parcelpoint_packages', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def get_parcelpoint_packages():

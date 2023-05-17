@@ -31,6 +31,17 @@ export default class APIService{
     .catch(error => console.log(error))
     }
 
+    static pickup_package(body, token){
+        return fetch('http://' + this.host + ':' + this.port + '/pickup_package',{
+            'method':'POST',
+            headers : {'Content-Type':'application/json', 
+            "Authorization": `Bearer ${token}`},
+            body:JSON.stringify(body)
+    })
+    .then(response => response.json())
+    .catch(error => console.log(error))
+    }
+
     static register_package(body, token){
         //console.log(JSON.stringify(body))
         return fetch('http://' + this.host + ':' + this.port + '/new_package',{
