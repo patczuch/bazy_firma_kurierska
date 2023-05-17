@@ -662,7 +662,8 @@ CREATE TABLE public.users (
     courier_id integer,
     parcelpoint_id integer,
     email character varying(320) NOT NULL,
-    password_hash character varying(255) NOT NULL
+    password_hash character varying(255) NOT NULL,
+    admin boolean DEFAULT false NOT NULL
 );
 
 
@@ -743,6 +744,17 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 3	1.20000	2	5	6	2	\N
 4	0.20000	2	7	8	1	\N
 1	5.00000	2	1	2	2	2023-04-25 10:25:46.795572
+5	0.10000	1	9	10	2	\N
+6	0.10000	1	11	12	2	\N
+7	0.10000	1	13	14	2	\N
+8	0.10000	1	15	16	2	\N
+9	0.10000	1	17	18	2	\N
+10	0.10000	1	19	20	2	\N
+11	0.30000	1	21	22	2	\N
+12	0.30000	1	23	24	2	\N
+13	0.30000	2	25	26	1	\N
+14	0.30000	2	27	28	1	\N
+15	0.30000	2	29	30	1	\N
 \.
 
 
@@ -758,6 +770,17 @@ COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM st
 6	2	1	2023-04-25 09:57:35.609408
 7	4	1	2023-04-25 09:57:35.609408
 8	1	2	2023-04-25 10:25:43.317601
+9	5	1	2023-05-17 13:08:54.52
+10	6	1	2023-05-17 13:13:03.78
+11	7	1	2023-05-17 13:13:11.89
+12	8	1	2023-05-17 13:14:51.06
+13	9	1	2023-05-17 13:14:52.74
+14	10	1	2023-05-17 13:15:16.2
+15	11	1	2023-05-17 13:15:26.05
+16	12	1	2023-05-17 13:15:50.08
+17	13	2	2023-05-17 13:25:27.84
+18	14	2	2023-05-17 13:26:46.98
+19	15	2	2023-05-17 14:07:25.49
 \.
 
 
@@ -784,6 +807,28 @@ COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 6	Jan Nowak	568901233	
 7			
 8			
+9	'	'	'
+10	'	'	'
+11	asdasd		
+12			
+13	asdasd		
+14			
+15	asdasd		
+16			
+17	asdasd		
+18			
+19	asdasd		
+20			
+21	asdasd		
+22			
+23	asdasd		
+24			
+25	Jan Kowalski	987654321	
+26	Zenon Nowak	123456789	
+27	Jan Kowalski	987654321	
+28	Zenon Nowak	123456789	
+29	Jan Kowalski	987654321	
+30	Zenon Nowak	123456789	
 \.
 
 
@@ -815,11 +860,11 @@ COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, courier_id, parcelpoint_id, email, password_hash) FROM stdin;
-4	\N	\N	kurier2@gmail.com	$2b$12$ofAYapQ8.So0TefzFUkFy.h79zR9t/wPmv8zAt839/j7B9/jL7kCC
-3	1	\N	kurier1@gmail.com	$2b$12$zN3YCuotJhhvDuVrNZvW/uX1nCiMCmKRnTJqD7tp/ih3vxQiXuQX2
-7	\N	1	punktpaczkowy1@gmail.com	$2b$12$3mSwizx/ceLy/UzShzXoXuauI3Xb3330uL58gIxDH.myLgVepaX9u
-6	1	2	wszystko@gmail.com	$2b$12$5gMtzSwfKmYnqoTz0.jnnuLqhb9.KFJqaIDkgBcY.jXK0ROTdx9wq
+COPY public.users (id, courier_id, parcelpoint_id, email, password_hash, admin) FROM stdin;
+3	1	\N	kurier1@gmail.com	$2b$12$zN3YCuotJhhvDuVrNZvW/uX1nCiMCmKRnTJqD7tp/ih3vxQiXuQX2	f
+7	\N	1	punktpaczkowy1@gmail.com	$2b$12$3mSwizx/ceLy/UzShzXoXuauI3Xb3330uL58gIxDH.myLgVepaX9u	f
+4	\N	\N	kurier2@gmail.com	$2b$12$ofAYapQ8.So0TefzFUkFy.h79zR9t/wPmv8zAt839/j7B9/jL7kCC	f
+6	\N	\N	admin@gmail.com	$2b$12$5gMtzSwfKmYnqoTz0.jnnuLqhb9.KFJqaIDkgBcY.jXK0ROTdx9wq	t
 \.
 
 

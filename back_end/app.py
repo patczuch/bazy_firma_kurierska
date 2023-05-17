@@ -18,6 +18,8 @@ bcrypt = Bcrypt(app)
 app.config["DEBUG"] = True
 
 app.config["JWT_SECRET_KEY"] = "haslo123haslo"
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 jwt = JWTManager(app)
 
 pg_conn = psycopg2.connect(host="localhost", dbname="postgres", port="5432", user="postgres", password="123456789")
@@ -74,9 +76,9 @@ def get_package_history():
     try:
         pg_cur.execute(sql, (request.json['package_id'],))
         pg_conn.commit()
-    except BaseException:
+    except Exception as e:
         pg_conn.rollback()
-        return jsonify("error")
+        return jsonify({'error': str(e)})
     data = pg_cur.fetchall()
     return jsonify(data)
 
@@ -84,15 +86,35 @@ def get_package_history():
 @jwt_required()
 def new_package():
     user_id = get_jwt_identity()
-    print(user_id,file=sys.stdout)
-    sql = "select registerpackage(%s, %s, '%s', '%s', '%s', '%s', %s, %s, '%s', '%s');"
+    print(authenticate(user_id))
+    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(request.json['source_packagepoint_id']):
+        return jsonify({'error': 'Authentication error!'})
+    sql = "select registerpackage(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
     try:
         pg_cur.execute(sql, (request.json['weight'], request.json['dimensions_id'], request.json['recipient_name'], request.json['recipient_phone_number'], request.json['sender_name'],
                             request.json['sender_phone_number'], request.json['destination_packagepoint_id'], request.json['source_packagepoint_id'], request.json['recipient_email'],
                             request.json['sender_email'],))
         pg_conn.commit()
-    except BaseException:
+    except Exception as e:
         pg_conn.rollback()
-        return jsonify("error")
+        return jsonify({'error': str(e)})
     data = pg_cur.fetchall()
     return jsonify(data)
+
+def authenticate(id):
+    sql = "select id, courier_id, parcelpoint_id, email, admin from users where id = %s"
+    try:
+        pg_cur.execute(sql, (id,))
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return None
+    user = pg_cur.fetchone()
+    res = {
+        "id": user[0],
+        "courier_id": user[1],
+        "parcelpoint_id": user[2],
+        "email": user[3],
+        "admin": user[4]
+    }
+    return res

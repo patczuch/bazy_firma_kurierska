@@ -88,6 +88,7 @@ CREATE TABLE Users (
     parcelpoint_id int  NULL,
     email varchar(320)  NOT NULL,
     password_hash varchar(255)  NOT NULL,
+    admin boolean  NOT NULL DEFAULT FALSE,
     CONSTRAINT Users_pk PRIMARY KEY (id),
 	UNIQUE(email)
 );

@@ -19,10 +19,10 @@ export function NewPackage(props) {
         APIService.register_package({weight, dimensions_id, recipient_name, recipient_phone_number, sender_name, sender_phone_number, 
             destination_packagepoint_id, source_packagepoint_id, recipient_email, sender_email},props.token)
         .then((response) => {
-            if (response.ok)
-                alert("Paczka zarejestrowana. ID: " + response)
+            if (!response || response["error"])
+                alert("Wystąpił błąd. Paczka nie została zarejestrowana.\n" + response["error"])
             else
-                alert("Wystąpił błąd. Paczka nie została zarejestrowana.")
+                alert("Paczka zarejestrowana. ID: " + response)
         })
         .catch(error => console.log('error',error))
       }
