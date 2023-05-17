@@ -26,6 +26,19 @@ export default class APIService{
     .catch(error => console.log(error))
     }
 
+    static get_parcelpoint_packages(body, token){
+        return fetch('http://' + this.host + ':' + this.port + '/parcelpoint_packages',{
+            'method':'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body:JSON.stringify({"parcelpoint_id": body})
+    })
+    .then(response => response.json())
+    .catch(error => console.log(error))
+    }
+
     static login(email, password, props, navigate){
         return fetch('http://' + this.host + ':' + this.port + '/login',{
             'method':'POST',

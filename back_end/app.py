@@ -72,6 +72,7 @@ def register():
 
 @app.route('/tracking', methods=['POST'], strict_slashes=False)
 def get_package_history():
+    #print("test", file=sys.stdout)
     sql = "select * from packagetrackinghistory(%s)"
     try:
         pg_cur.execute(sql, (request.json['package_id'],))
@@ -82,11 +83,73 @@ def get_package_history():
     data = pg_cur.fetchall()
     return jsonify(data)
 
+@app.route('/parcelpoint_packages', methods=['POST'], strict_slashes=False)
+@jwt_required()
+def get_parcelpoint_packages():
+    #print("test", file=sys.stdout)
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(request.json['parcelpoint_id']):
+        return jsonify({'error': 'Authentication error!'})
+    sql = "select getcontentsofparcelpoint(%s)"
+    try:
+        pg_cur.execute(sql, (request.json['parcelpoint_id'],))
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)})
+    data = pg_cur.fetchall()
+    res = []
+    for id in data:
+        package_info = get_package_info(id)
+        if package_info is not None:
+            res.append(package_info)
+    return jsonify(res)
+
+def get_package_info(id):
+    sql = "select weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id from packages where id = %s"
+    try:
+        pg_cur.execute(sql, (id,))
+        pg_conn.commit()
+        package_info = pg_cur.fetchone()
+    except Exception as e:
+        pg_conn.rollback()
+        return None
+    
+    sql2 = "select name, phone_number, email from personinfo where id = %s"
+    try:
+        pg_cur.execute(sql2, (package_info[2],))
+        pg_conn.commit()
+        sender_info = pg_cur.fetchone()
+    except Exception as e:
+        pg_conn.rollback()
+        return None
+
+    try:
+        pg_cur.execute(sql2, (package_info[3],))
+        pg_conn.commit()
+        recipient_info = pg_cur.fetchone()
+    except Exception as e:
+        pg_conn.rollback()
+        return None
+    
+    return {
+        "id": id,
+        "weight": package_info[0],
+        "dimensions_id": package_info[1],
+        "sender_name": sender_info[0],
+        "sender_phone_number": sender_info[1],
+        "sender_email": sender_info[2],
+        "recipient_name": recipient_info[0],
+        "recipient_phone_number": recipient_info[1],
+        "recipient_email": recipient_info[2],
+        "destination_packagepoint_id": package_info[4]
+    }
+
 @app.route('/new_package', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def new_package():
     user_id = get_jwt_identity()
-    print(authenticate(user_id))
+    #print(authenticate(user_id))
     if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(request.json['source_packagepoint_id']):
         return jsonify({'error': 'Authentication error!'})
     sql = "select registerpackage(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
@@ -106,10 +169,10 @@ def authenticate(id):
     try:
         pg_cur.execute(sql, (id,))
         pg_conn.commit()
+        user = pg_cur.fetchone()
     except Exception as e:
         pg_conn.rollback()
         return None
-    user = pg_cur.fetchone()
     res = {
         "id": user[0],
         "courier_id": user[1],

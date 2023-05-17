@@ -60,7 +60,7 @@ export const Navbar = (props) => {
               className="navbar-item"
               to="/register_pickup"
             >
-              Zarejestruj odbiór
+              Paczki w punkcie
             </NavLink> : "" }
 
             {props.user_parcelpoint_id ? 

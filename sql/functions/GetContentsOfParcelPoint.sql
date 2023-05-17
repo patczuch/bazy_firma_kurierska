@@ -20,7 +20,8 @@ begin
             group by package_id
         ) as T1
         inner join parcelpointpackages as PPP on T1.package_id = PPP.package_id
-        where T1.last_update = PPP.time and PPP.parcelpoint_id = _parcelPointID;
+        inner join packages p on PPP.package_id = p.id
+        where T1.last_update = PPP.time and PPP.parcelpoint_id = _parcelPointID and pickedup_time IS NULL;
 
 end;
 $$;

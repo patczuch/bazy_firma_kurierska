@@ -28,7 +28,7 @@ function App() {
             <Route exact path="/" element={<Home />}></Route>
             <Route exact path="/tracking" element={<Tracking />}></Route>
             <Route exact path="/new_package" element={<NewPackage user_parcelpoint_id={user_parcelpoint_id} token={token}/>}></Route>
-            <Route exact path="/register_pickup" element={<RegisterPickup user_parcelpoint_id={user_parcelpoint_id}/>}></Route>
+            <Route exact path="/register_pickup" element={<RegisterPickup user_parcelpoint_id={user_parcelpoint_id} token={token}/>}></Route>
             <Route exact path="/new_route" element={<NewRoute user_parcelpoint_id={user_parcelpoint_id}/>}></Route>
             <Route exact path="/finish_route" element={<FinishRoute user_courier_id={user_courier_id}/>}></Route>
             <Route exact path="/login" element={<Login setUser={setUser} setToken={setToken} token={token}/>}></Route>
