@@ -38,7 +38,7 @@ def login():
         pg_conn.commit()
     except Exception as e:
         pg_conn.rollback()
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 400
     if not user:
         return jsonify({"error": "Invalid email"}), 401
 
@@ -64,7 +64,7 @@ def register():
         pg_conn.commit()
     except Exception as e:
         pg_conn.rollback()
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 400
     
     if existing_user:
         return jsonify({"error": "User already exists"}), 400
@@ -75,7 +75,7 @@ def register():
         pg_conn.commit()
     except Exception as e:
         pg_conn.rollback()
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 400
 
     return jsonify({"success": "User registered successfully"}), 201
 
@@ -89,8 +89,8 @@ def get_package_history():
         data = pg_cur.fetchall()
     except Exception as e:
         pg_conn.rollback()
-        return jsonify({'error': str(e)})
-    return jsonify(data)
+        return jsonify({'error': str(e)}), 400
+    return jsonify(data), 200
 
 @app.route('/pickup_package', methods=['POST'], strict_slashes=False)
 @jwt_required()
@@ -103,12 +103,12 @@ def pickup_package():
         data = pg_cur.fetchone()
     except Exception as e:
         pg_conn.rollback()
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 400
     
     
     user_id = get_jwt_identity()
     if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(data[0]) or data[0] == -1:
-        return jsonify({'error': 'Authentication error!'})
+        return jsonify({'error': 'Authentication error!'}), 401
     
     sql2 = "select pickuppackage(%s)"
     try:
@@ -116,9 +116,9 @@ def pickup_package():
         pg_conn.commit()
     except Exception as e:
         pg_conn.rollback()
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 400
     
-    return jsonify({'success':'Succesfuly registered pickup'})
+    return jsonify({'success':'Succesfuly registered pickup'}), 200
 
 @app.route('/parcelpoint_packages', methods=['POST'], strict_slashes=False)
 @jwt_required()
@@ -126,7 +126,7 @@ def get_parcelpoint_packages():
     #print("test", file=sys.stdout)
     user_id = get_jwt_identity()
     if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(request.json['parcelpoint_id']):
-        return jsonify({'error': 'Authentication error!'})
+        return jsonify({'error': 'Authentication error!'}), 401
     sql = "select getcontentsofparcelpoint(%s)"
     try:
         pg_cur.execute(sql, (request.json['parcelpoint_id'],))
@@ -134,13 +134,13 @@ def get_parcelpoint_packages():
         data = pg_cur.fetchall()
     except Exception as e:
         pg_conn.rollback()
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 400
     res = []
     for id in data:
         package_info = get_package_info(id)
         if package_info is not None:
             res.append(package_info)
-    return jsonify(res)
+    return jsonify(res), 200
 
 @app.route('/package_dimensions', methods=['GET'], strict_slashes=False)
 def get_package_dimensions():
@@ -150,8 +150,8 @@ def get_package_dimensions():
         res = pg_cur.fetchall()
     except Exception as e:
         pg_conn.rollback()
-        return jsonify({'error': str(e)})
-    return res
+        return jsonify({'error': str(e)}), 400
+    return res, 200
 
 @app.route('/parcelpoints', methods=['GET'], strict_slashes=False)
 def get_parcelpoints():
@@ -161,8 +161,8 @@ def get_parcelpoints():
         res = pg_cur.fetchall()
     except Exception as e:
         pg_conn.rollback()
-        return jsonify({'error': str(e)})
-    return res
+        return jsonify({'error': str(e)}), 400
+    return res, 200
 
 def get_package_info(id):
     sql = "select weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id from packages where id = %s"
@@ -210,7 +210,7 @@ def new_package():
     user_id = get_jwt_identity()
     #print(authenticate(user_id))
     if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(request.json['source_packagepoint_id']):
-        return jsonify({'error': 'Authentication error!'})
+        return jsonify({'error': 'Authentication error!'}), 401
     sql = "select registerpackage(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
     try:
         pg_cur.execute(sql, (request.json['weight'], request.json['dimensions_id'], request.json['recipient_name'], request.json['recipient_phone_number'], request.json['sender_name'],
@@ -220,8 +220,8 @@ def new_package():
         data = pg_cur.fetchall()
     except Exception as e:
         pg_conn.rollback()
-        return jsonify({'error': str(e)})
-    return jsonify(data)
+        return jsonify({'error': str(e)}), 400
+    return jsonify(data), 200
 
 def authenticate(id):
     sql = "select id, courier_id, parcelpoint_id, email, admin from users where id = %s"
