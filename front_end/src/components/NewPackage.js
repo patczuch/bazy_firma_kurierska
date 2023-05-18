@@ -26,7 +26,7 @@ export function NewPackage(props) {
             if (!response || response["error"])
                 alert("Wystąpił błąd. Paczka nie została zarejestrowana.\n" + response["error"])
             else
-                alert("Paczka zarejestrowana. ID: " + response)
+                alert(response["success"])
         })
         .catch(error => console.log('error',error))
       }
@@ -40,7 +40,7 @@ export function NewPackage(props) {
         .then((response) => {
             set_package_dimensions(response); 
             if (response && response[0])
-                set_dimensions_id(response[0][0])
+                set_dimensions_id(response[0]["id"])
             else
                 load_package_dimensions()  
         })
@@ -54,7 +54,7 @@ export function NewPackage(props) {
             //console.log(response.filter((el) => el[0] != props.user_parcelpoint_id)[0][0])
             if (response && response.filter && response[0])
                 set_destination_packagepoint_id((
-                    response.filter((el) => el[0] != props.user_parcelpoint_id))[0][0])
+                    response.filter((el) => el["id"] != props.user_parcelpoint_id))[0]["id"])
             else
                 load_parcelpoints()   
         })
@@ -68,8 +68,8 @@ export function NewPackage(props) {
             <label htmlFor="dimensions">Rozmiar</label>
             <select name="dimensions" id="dimensions" style={{margin: '0.5em', width: '20em'}} value={dimensions_id} onChange={(e)=>set_dimensions_id(e.target.value)}>
             {(!package_dimensions || !package_dimensions.map) ? "" : package_dimensions.map((el,i) => 
-            <option value={el[0]} key={"package_dimensions_option_"+i}>
-                {el[1]+ " " + Math.round(el[2])+"x"+Math.round(el[3])+"x"+Math.round(el[4])+"cm"}
+            <option value={el["id"]} key={"package_dimensions_option_"+i}>
+                {el["name"]+ " " + Math.round(el["dimension_x"])+"x"+Math.round(el["dimension_y"])+"x"+Math.round(el["dimension_z"])+"cm"}
             </option>
             )}
             </select>
@@ -84,15 +84,15 @@ export function NewPackage(props) {
             <label htmlFor="source_parcelpoint">Punkt nadawczy</label>
             <select name="source_parcelpoint" id="source_parcelpoint" style={{margin: '0.5em', width: '20em'}} value={source_packagepoint_id} onChange={(e)=>set_source_packagepoint_id(e.target.value)}>
             {(!parcelpoints || !parcelpoints.map) ? "" : parcelpoints.map((el,i) => 
-                el[0] != props.user_parcelpoint_id ? "" : <option value={parseInt(el[0])} key={"source_parcelpoint_option_"+i}>
-                    {el[0] + ". " + el[1]+ " " + el[2] + " " + el[3] + " " + el[4] + (el[5] ? "/" + el[5] : "")}
+                el["id"] != props.user_parcelpoint_id ? "" : <option value={parseInt(el["id"])} key={"source_parcelpoint_option_"+i}>
+                    {el["id"] + ". " + el["name"]+ " " + el["city"] + " " + el["street"] + " " + el["house_number"] + (el["apartment_number"] ? "/" + el["apartment_number"] : "")}
                 </option>)}
             </select>
             <label htmlFor="destination_parcelpoint">Punkt odbiorczy</label>
             <select name="destination_parcelpoint" id="destination_parcelpoint" style={{margin: '0.5em', width: '20em'}} value={destination_packagepoint_id} onChange={(e)=>set_destination_packagepoint_id(e.target.value)}>
             {(!parcelpoints || !parcelpoints.map) ? "" : parcelpoints.map((el,i) => 
-            el[0] == props.user_parcelpoint_id ? "" : <option value={parseInt(el[0])} key={"destination_parcelpoint_option_"+i}>
-                {el[0] + ". " + el[1]+ " " + el[2] + " " + el[3] + " " + el[4] + (el[5] ? "/" + el[5] : "")}
+            el["id"] == props.user_parcelpoint_id ? "" : <option value={parseInt(el["id"])} key={"destination_parcelpoint_option_"+i}>
+                {el["id"] + ". " + el["name"]+ " " + el["city"] + " " + el["street"] + " " + el["house_number"] + (el["apartment_number"] ? "/" + el["apartment_number"] : "")}
             </option>
             )}
             </select>
