@@ -3,8 +3,15 @@ export default class APIService{
     static host = "localhost";
     static port = "5000";
 
-    static finish_route(body, token) {
-
+    static finish_route(body, token){
+        return fetch('http://' + this.host + ':' + this.port + '/finish_route',{
+            'method':'POST',
+            headers : {'Content-Type':'application/json', 
+            "Authorization": `Bearer ${token}`},
+            body:JSON.stringify(body)
+    })
+    .then(response => response.json())
+    .catch(error => console.log(error))
     }
 
     static get_routes(token){

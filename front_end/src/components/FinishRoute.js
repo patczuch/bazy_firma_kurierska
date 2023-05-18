@@ -29,7 +29,6 @@ export function FinishRoute(props) {
           else
             alert(response["error"])
           window.location.reload(false); 
-          //console.log(response)
         })
         .catch(error => console.log('error',error))
       }
@@ -46,11 +45,11 @@ export function FinishRoute(props) {
                 <div style= {{display: 'table-cell', width: '20em'}}> Data: {el["time"]} </div> 
                 <div style= {{display: 'table-cell', width: '10em'}}> Pojazd: {el["vehicle_reg_plate"]} </div> 
                 {(!parcelpoints || !parcelpoints.map) ? "" : parcelpoints.filter((el2) => el2["id"] == el["source_parcelpoint_id"]).map((el3,i) => 
-                <div style= {{display: 'table-cell', width: '30em'}}>
+                <div key = {"routes_container_"+i+"_"+0+"_1"} style= {{display: 'table-cell', width: '30em'}}>
                     Punkt poczatkowy:<br></br> {el3["id"] + ". " + el3["name"]+ " " + el3["city"] + " " + el3["street"] + " " + el3["house_number"] + (el3["apartment_number"] ? "/" + el3["apartment_number"] : "")}
                 </div>)}
                 {(!parcelpoints || !parcelpoints.map) ? "" : parcelpoints.filter((el2) => el2["id"] == el["destination_parcelpoint_id"]).map((el3,i) => 
-                <div style= {{display: 'table-cell', width: '30em'}}>
+                <div key = {"routes_container_"+i+"_"+0+"_2"}style= {{display: 'table-cell', width: '30em'}}>
                     Punkt docelowy:<br></br> {el3["id"] + ". " + el3["name"]+ " " + el3["city"] + " " + el3["street"] + " " + el3["house_number"] + (el3["apartment_number"] ? "/" + el3["apartment_number"] : "")}
                 </div>)}
                 <input style={{margin: '0.5em'}} type='button' className="button **is-large is-success is-rounded**" value='Potwierdź odbycie trasy' onClick={() => confirm_finished({"route_id": el["id"]})}/> 

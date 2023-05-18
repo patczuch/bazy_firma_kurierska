@@ -210,6 +210,37 @@ def get_routes():
         })
     return jsonify(res), 200
 
+@app.route('/finish_route', methods=['POST'], strict_slashes=False)
+@jwt_required()
+def finish_route():
+    sql = "select completeroute(%s)"
+    sql2 = "select courier_id from routes where id = %s"
+
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or not authenticate(user_id)["courier_id"]:
+        return jsonify({'error': 'Authentication error!'}), 401
+    
+    pg_conn = db_pool.getconn()
+    try:
+        pg_cur = pg_conn.cursor()
+
+        pg_cur.execute(sql2, (request.json['route_id'],))
+        data = pg_cur.fetchone()
+        if data[0] != authenticate(user_id)["courier_id"]:
+            return jsonify({'error': 'Authentication error!'}), 401
+
+        pg_cur.execute(sql, (request.json['route_id'],))
+
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+        
+    return jsonify({'success':'Route succesfully finished'}), 200
+
 @app.route('/package_dimensions', methods=['GET'], strict_slashes=False)
 def get_package_dimensions():
     pg_conn = db_pool.getconn()
