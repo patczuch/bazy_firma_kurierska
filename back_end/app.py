@@ -115,6 +115,25 @@ def get_package_history():
         
     return jsonify(data), 200
 
+@app.route('/create_route', methods=['POST'], strict_slashes=False)
+def create_route():
+    #print("test", file=sys.stdout)
+    sql = "select addroute(%s,%s,%s,%s,%s,%s)"
+    pg_conn = db_pool.getconn()
+    try:
+        pg_cur = pg_conn.cursor()
+        pg_cur.execute(sql, (request.json['route_time'],request.json['source_packagepoint_id'],
+                             request.json['destination_packagepoint_id'],request.json['vehicle'],request.json['courier'],request.json['selected_packages'],))
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+        
+    return jsonify({"success": "Route added successfully"}), 200
+
 @app.route('/pickup_package', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def pickup_package():
@@ -238,6 +257,38 @@ def get_vehicles():
             "id": veh[0],
             "registration_plate": veh[1],
             "max_weight": veh[2]
+        })
+    return res, 200
+
+@app.route('/couriers', methods=['GET'], strict_slashes=False)
+@jwt_required()
+def get_couriers():
+    sql = "select id, first_name, last_name, phone_number from couriers"
+
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or (not authenticate(user_id)["courier_id"] and not authenticate(user_id)["parcelpoint_id"] and not not authenticate(user_id)["admin"]):
+        return jsonify({'error': 'Authentication error!'}), 401
+    
+    pg_conn = db_pool.getconn()
+    try:
+        pg_cur = pg_conn.cursor()
+        pg_cur.execute(sql)
+        data = pg_cur.fetchall()
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+        
+    res = []
+    for veh in data:
+        res.append({
+            "id": veh[0],
+            "first_name": veh[1],
+            "last_name": veh[2],
+            "phone_number": veh[3]
         })
     return res, 200
 

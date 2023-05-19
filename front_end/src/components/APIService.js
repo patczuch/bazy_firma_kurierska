@@ -3,6 +3,18 @@ export default class APIService{
     static host = "localhost";
     static port = "5000";
 
+    static create_route(body, token){
+        console.log(JSON.stringify(body))
+        return fetch('http://' + this.host + ':' + this.port + '/create_route',{
+            'method':'POST',
+            headers : {'Content-Type':'application/json', 
+            "Authorization": `Bearer ${token}`},
+            body:JSON.stringify(body)
+    })
+    .then(response => response.json())
+    .catch(error => console.log(error))
+    }
+
     static finish_route(body, token){
         return fetch('http://' + this.host + ':' + this.port + '/finish_route',{
             'method':'POST',
@@ -17,6 +29,26 @@ export default class APIService{
     static get_routes(token){
         return fetch('http://' + this.host + ':' + this.port + '/routes',{
             'method':'POST',
+            headers : {'Content-Type':'application/json', 
+            "Authorization": `Bearer ${token}`}
+    })
+    .then(response => response.json())
+    .catch(error => console.log(error))
+    }
+
+    static get_vehicles(token){
+        return fetch('http://' + this.host + ':' + this.port + '/vehicles',{
+            'method':'GET',
+            headers : {'Content-Type':'application/json', 
+            "Authorization": `Bearer ${token}`}
+    })
+    .then(response => response.json())
+    .catch(error => console.log(error))
+    }
+
+    static get_couriers(token){
+        return fetch('http://' + this.host + ':' + this.port + '/couriers',{
+            'method':'GET',
             headers : {'Content-Type':'application/json', 
             "Authorization": `Bearer ${token}`}
     })
