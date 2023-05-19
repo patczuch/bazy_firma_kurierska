@@ -210,6 +210,37 @@ def get_routes():
         })
     return jsonify(res), 200
 
+@app.route('/vehicles', methods=['GET'], strict_slashes=False)
+@jwt_required()
+def get_vehicles():
+    sql = "select id, registration_plate, max_weight from vehicles"
+
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or (not authenticate(user_id)["courier_id"] and not authenticate(user_id)["parcelpoint_id"] and not not authenticate(user_id)["admin"]):
+        return jsonify({'error': 'Authentication error!'}), 401
+    
+    pg_conn = db_pool.getconn()
+    try:
+        pg_cur = pg_conn.cursor()
+        pg_cur.execute(sql)
+        data = pg_cur.fetchall()
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+        
+    res = []
+    for veh in data:
+        res.append({
+            "id": veh[0],
+            "registration_plate": veh[1],
+            "max_weight": veh[2]
+        })
+    return res, 200
+
 @app.route('/finish_route', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def finish_route():

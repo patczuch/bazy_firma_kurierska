@@ -1,4 +1,4 @@
-create  or replace function addRoute(_time timestamp without time zone, _sourceID integer, _destinationID integer,
+create  or replace function addRoute(_time timestamp, _sourceID integer, _destinationID integer,
     _vehicleID integer, _courierID integer, _packcagesID integer[])
     returns integer
     language plpgsql
@@ -73,5 +73,5 @@ begin
 end;
 $$;
 
-alter function addRoute(timestamp without time zone, integer, integer, integer,  integer,  integer[]) owner to postgres;
+alter function addRoute(timestamp, integer, integer, integer,  integer,  integer[]) owner to postgres;
 
