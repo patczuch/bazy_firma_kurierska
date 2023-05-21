@@ -226,6 +226,7 @@ begin
         RAISE unique_violation USING MESSAGE = 'Vehicle with id ' || _vehicleID || ' has planned route on this time!';
     end if;
 
+    -- obliczanie wspólnej wagi oraz objętości
     foreach _pacID in array _packcagesID loop
         if (NOT EXISTS (select * from packages where id = _pacID)) then
             RAISE unique_violation USING MESSAGE = 'Package with id ' || _pacID || ' doesnt exist!';
@@ -233,14 +234,8 @@ begin
         if (packagelocation(_pacID) != _sourceID) then
             RAISE unique_violation USING MESSAGE = 'Package with id ' || _pacID || ' isnt at source package point !';
         end if;
-        objetosc := objetosc + (select pd.dimension_x * pd.dimension_y * pd.dimension_z from packagedimensions pd
-            inner join packages p on pd.id = p.dimensions_id where p.id = _pacID);
         waga := waga + (select p.weight from packages p where  p.id = _pacID);
     end loop;
-
-    if (objetosc > (select v.dimension_z * v.dimension_x * v.dimension_y from vehicles v where v.id = _vehicleID)) then
-        RAISE unique_violation USING MESSAGE = 'Packages are to big for this vehicle ' || _vehicleID;
-    end if;
 
     if (waga > (select v.max_weight from vehicles v where v.id = _vehicleID)) then
         RAISE unique_violation USING MESSAGE = 'Packages weight too much for this vehicle ' || _vehicleID;
@@ -260,6 +255,38 @@ $$;
 
 
 ALTER FUNCTION public.addroute(_time timestamp without time zone, _sourceid integer, _destinationid integer, _vehicleid integer, _courierid integer, _packcagesid integer[]) OWNER TO postgres;
+
+--
+-- Name: addvehicle(character varying, numeric); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.addvehicle(_registrationplate character varying, _maxweight numeric) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+declare
+    _vehicleID integer := (select max(id) from vehicles) + 1;
+begin
+    if (length(_registrationPlate) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Registration plate cant be empty !';
+    end if;
+
+     if (_maxWeight <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Max weight must be positive !';
+    end if;
+
+    if(exists(select id from vehicles d where d.registration_plate = _registrationPlate)) then
+        RAISE unique_violation USING MESSAGE = 'Vehicle with this registration plate exists !';
+    end if;
+
+    insert into vehicles (id, registration_plate, max_weight)
+        values (_vehicleID, _registrationPlate, _maxWeight);
+
+    return _vehicleID;
+end;
+$$;
+
+
+ALTER FUNCTION public.addvehicle(_registrationplate character varying, _maxweight numeric) OWNER TO postgres;
 
 --
 -- Name: addvehicle(character varying, numeric, numeric, numeric, numeric); Type: FUNCTION; Schema: public; Owner: postgres
@@ -699,9 +726,6 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 CREATE TABLE public.vehicles (
     id integer NOT NULL,
     registration_plate character varying(10) NOT NULL,
-    dimension_x numeric(10,5) NOT NULL,
-    dimension_y numeric(10,5) NOT NULL,
-    dimension_z numeric(10,5) NOT NULL,
     max_weight numeric(10,5) NOT NULL
 );
 
@@ -720,7 +744,16 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 COPY public.couriers (id, first_name, last_name, phone_number) FROM stdin;
-1	Dawid	Dąbrowski	123789456
+1	John	Smith	123-456-7890
+2	Emily	Johnson	987-654-3210
+3	Michael	Williams	555-123-4567
+4	Emma	Brown	444-555-6666
+5	Daniel	Jones	777-888-9999
+6	Olivia	Davis	111-222-3333
+7	Matthew	Miller	999-888-7777
+8	Sophia	Wilson	666-555-4444
+9	James	Taylor	333-222-1111
+10	Ava	Anderson	222-333-4444
 \.
 
 
@@ -754,7 +787,6 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 19	0.10000	1	37	38	2	\N
 20	0.10000	1	39	40	2	\N
 21	0.10000	1	41	42	2	\N
-22	0.10000	1	43	44	2	\N
 23	0.10000	1	45	46	2	\N
 24	0.10000	1	47	48	2	\N
 4	0.20000	2	7	8	2	\N
@@ -763,7 +795,6 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 12	0.30000	1	23	24	1	\N
 10	0.10000	1	19	20	1	\N
 13	0.30000	2	25	26	2	\N
-15	0.30000	2	29	30	2	\N
 14	0.30000	2	27	28	2	\N
 25	1.20000	2	49	50	1	\N
 26	0.40000	3	51	52	1	\N
@@ -772,6 +803,14 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 29	0.20000	1	57	58	1	\N
 30	0.30000	1	59	60	1	\N
 31	0.20000	1	61	62	1	\N
+15	0.30000	2	29	30	2	2023-05-17 22:09:59.800314
+22	0.10000	1	43	44	2	2023-05-17 22:10:04.673201
+32	0.30000	2	63	64	2	\N
+33	0.40000	1	65	66	2	\N
+34	0.30000	1	67	68	2	\N
+35	0.20000	1	69	70	2	\N
+36	0.30000	1	71	72	2	\N
+37	0.30000	1	73	74	2	\N
 \.
 
 
@@ -816,6 +855,18 @@ COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM st
 35	29	2	2023-05-17 19:48:07.65
 36	30	2	2023-05-17 19:48:11.1
 37	31	2	2023-05-17 19:48:16.45
+38	32	1	2023-05-18 19:38:02.27
+39	33	1	2023-05-18 19:39:15.78
+40	34	1	2023-05-18 19:41:00.91
+41	35	1	2023-05-18 19:41:27.84
+42	2	2	2023-05-18 23:00:08.490918
+43	4	2	2023-05-18 23:00:08.490918
+44	2	1	2023-05-18 23:00:33.844903
+45	4	1	2023-05-18 23:00:33.844903
+46	2	2	2023-05-18 23:00:36.664725
+47	4	2	2023-05-18 23:00:36.664725
+48	36	1	2023-05-19 17:13:46.46
+49	37	1	2023-05-19 17:13:56.39
 \.
 
 
@@ -826,6 +877,14 @@ COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM st
 COPY public.parcelpoints (id, name, city, street, house_number, apartment_number) FROM stdin;
 1	Punkt Krakowski	Kraków	Jasnogórska	22	\N
 2	Punkt Warszawski	Warszawa	Złota	44	51
+3	Punkt Gdański	Gdańsk	Długa	10	\N
+4	Punkt Poznański	Poznań	Wielka	5	3
+5	Punkt Wrocławski	Wrocław	Rynek	15	\N
+6	Punkt Łódzki	Łódź	Piotrkowska	30	\N
+7	Punkt Szczeciński	Szczecin	Wojska Polskiego	8	12
+8	Punkt Lubelski	Lublin	Krakowskie Przedmieście	50	\N
+9	Punkt Białostocki	Białystok	Lipowa	7	\N
+10	Punkt Katowicki	Katowice	Mariacka	11	2
 \.
 
 
@@ -896,6 +955,18 @@ COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 60			
 61			
 62			
+63	Jan Kowalski	987654321	
+64	Zenon Nowak	123456789	
+65			
+66			
+67			
+68			
+69			
+70			
+71			
+72			
+73			
+74			
 \.
 
 
@@ -909,6 +980,9 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 2	4
 3	2
 3	4
+4	5
+4	9
+4	16
 \.
 
 
@@ -917,9 +991,10 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 --
 
 COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_id, completed, source_parcelpoint_id) FROM stdin;
-2	2023-04-24 10:40:19	1	1	1	t	2
-3	2023-04-26 10:40:19	2	1	1	f	1
 1	2023-04-21 23:40:19	2	1	1	t	1
+3	2023-04-26 10:40:19	2	1	1	t	1
+2	2023-04-24 10:40:19	1	1	1	f	2
+4	2023-05-20 17:27:00	2	1	1	f	1
 \.
 
 
@@ -928,11 +1003,27 @@ COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_
 --
 
 COPY public.users (id, courier_id, parcelpoint_id, email, password_hash, admin) FROM stdin;
-3	1	\N	kurier1@gmail.com	$2b$12$zN3YCuotJhhvDuVrNZvW/uX1nCiMCmKRnTJqD7tp/ih3vxQiXuQX2	f
-7	\N	1	punktpaczkowy1@gmail.com	$2b$12$3mSwizx/ceLy/UzShzXoXuauI3Xb3330uL58gIxDH.myLgVepaX9u	f
-4	\N	\N	kurier2@gmail.com	$2b$12$ofAYapQ8.So0TefzFUkFy.h79zR9t/wPmv8zAt839/j7B9/jL7kCC	f
-6	\N	\N	admin@gmail.com	$2b$12$5gMtzSwfKmYnqoTz0.jnnuLqhb9.KFJqaIDkgBcY.jXK0ROTdx9wq	t
-1	\N	2	punktpaczkowy2@gmail.com	$2b$12$e9wEdEA4Ixdm.DYbUdt08.f0cmHYlDhxjHMbr32rcH03AnDqSkdoe	f
+9	\N	5	punktpaczkowy5@gmail.com	$2b$12$y9U1Lb8wVWy9boN7uAkcTOchBW/4lVwzgfbXru5vGbozG9Noe2Qem	f
+22	8	\N	kurier8@gmail.com	$2b$12$PEf9ztpi3qTS0JbNBiUceOuw4twsRth1nNm0m6bZoaD/uJ09cXiH.	f
+20	6	\N	kurier6@gmail.com	$2b$12$5RAV75EvhUOazt2q7mKtMujZY19eRNgMDOoIsaZQAtevHuH2uo1pm	f
+18	4	\N	kurier4@gmail.com	$2b$12$AscGGgblRJRrmqxTPaHDNepSh2TM5p9bFAoRhKwLtjn6g605hPJ/K	f
+6	\N	2	punktpaczkowy2@gmail.com	$2b$12$b88HYidiT8p7KvYT6KyfGuihPxi26fEUDIhP6DGYmMbOiGVtrqIam	f
+5	\N	1	punktpaczkowy1@gmail.com	$2b$12$A0HyKdggdMGfl3ZIfQg8OOP9sen2WO6SQJsj6igWTwqnPDh3fA58.	f
+16	2	\N	kurier2@gmail.com	$2b$12$3TbPAOyO43G8xplT4aO3J.6mavmlrE0GWpULkrDG0EmxDlNz6SEG6	f
+11	\N	7	punktpaczkowy7@gmail.com	$2b$12$5U32NbpZooS/3p8ILuRDse55eVeWjBg.jTvg62wb/64KE7FBj4KBC	f
+25	\N	\N	admin@gmail.com	$2b$12$qktzrHyaKrIFowpboTh9r.z39QSDiF5E46DEaAGYuVe1oPbDlRO82	t
+23	9	\N	kurier9@gmail.com	$2b$12$Z87cHHflWxLudt6xbjDASe1qBxcrukhSCrLY4N1lEr6czGNRR6l/S	f
+21	7	\N	kurier7@gmail.com	$2b$12$dB96A6fuXj2VF5vAgJVQmel4IYGhrI0dFz08zai.OfoFXfuzm6mhS	f
+19	5	\N	kurier5@gmail.com	$2b$12$McnGk0nlsp5Eajrw.rCNQuTllgSdxCx2CAnS2HHqtop4sw0S6Xyty	f
+13	\N	9	punktpaczkowy9@gmail.com	$2b$12$c4Ecog2Om9VA7THKRLR5oOYHopLHZ2BBLBwcVD2saKNX.HRP0dgV2	f
+8	\N	4	punktpaczkowy4@gmail.com	$2b$12$RWehN9ew7eNi.Eotkce.P.MR/LcxWr.y/nndvM5LZq8K86GOkuECe	f
+17	3	\N	kurier3@gmail.com	$2b$12$WRVdEeuVCaJRnUvFFu.yLuc9rx.LJDJsA40ZzripBsVnyTTsYXKGW	f
+12	\N	8	punktpaczkowy8@gmail.com	$2b$12$pRazwitV7piVZ8jsiGvxv.l2VN.N90Haay2cxUSidI./YA56E0Qbi	f
+10	\N	6	punktpaczkowy6@gmail.com	$2b$12$FwM7iicWYOWpgpvg5gqAnOpM2n5BOedkUTp8/YRQrMgYvc3jp8MkC	f
+14	\N	10	punktpaczkowy10@gmail.com	$2b$12$OhXGjYc7VAeAzYx6x1kEO.PHcENNC/q1nqOGw9.tGMZ0RVmBCIVTG	f
+7	\N	3	punktpaczkowy3@gmail.com	$2b$12$fL/zp7xU7c5u5X57oJbl7u8oZ6gxFpjVe7XYKmXArWulFAwEloqfG	f
+15	1	\N	kurier1@gmail.com	$2b$12$8uDI7vTJUU4.zotbnjN5xO.FF3RUTeGIJ.HOsXBUobckOBr4Q5eGO	f
+24	10	\N	kurier10@gmail.com	$2b$12$iCwiygJdSI5ryAsNvKbV/OmNJl473YjHAbZtQOO4nxXzIWQB.s5KO	f
 \.
 
 
@@ -940,9 +1031,17 @@ COPY public.users (id, courier_id, parcelpoint_id, email, password_hash, admin) 
 -- Data for Name: vehicles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.vehicles (id, registration_plate, dimension_x, dimension_y, dimension_z, max_weight) FROM stdin;
-1	KRA 81TL	500.00000	228.00000	196.00000	10000.50000
-2	K2 AK47	700.00000	150.00000	270.00000	17777.00000
+COPY public.vehicles (id, registration_plate, max_weight) FROM stdin;
+2	DEF456	2000.00000
+1	ABC123	1500.00000
+3	GHI789	1800.50000
+4	JKL012	2200.75000
+5	MNO345	1900.25000
+6	PQR678	1700.50000
+7	STU901	2100.75000
+8	VWX234	1600.25000
+9	YZA567	2300.50000
+10	BCD890	1400.75000
 \.
 
 
@@ -950,7 +1049,7 @@ COPY public.vehicles (id, registration_plate, dimension_x, dimension_y, dimensio
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 1, true);
+SELECT pg_catalog.setval('public.users_id_seq', 25, true);
 
 
 --

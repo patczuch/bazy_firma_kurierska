@@ -97,9 +97,6 @@ CREATE TABLE Users (
 CREATE TABLE Vehicles (
     id int  NOT NULL,
     registration_plate varchar(10)  NOT NULL,
-    dimension_x decimal(10,5)  NOT NULL,
-    dimension_y decimal(10,5)  NOT NULL,
-    dimension_z decimal(10,5)  NOT NULL,
     max_weight decimal(10,5)  NOT NULL,
     CONSTRAINT Vehicles_pk PRIMARY KEY (id)
 );

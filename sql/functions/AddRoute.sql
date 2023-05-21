@@ -48,14 +48,8 @@ begin
         if (packagelocation(_pacID) != _sourceID) then
             RAISE unique_violation USING MESSAGE = 'Package with id ' || _pacID || ' isnt at source package point !';
         end if;
-        objetosc := objetosc + (select pd.dimension_x * pd.dimension_y * pd.dimension_z from packagedimensions pd
-            inner join packages p on pd.id = p.dimensions_id where p.id = _pacID);
         waga := waga + (select p.weight from packages p where  p.id = _pacID);
     end loop;
-
-    if (objetosc > (select v.dimension_z * v.dimension_x * v.dimension_y from vehicles v where v.id = _vehicleID)) then
-        RAISE unique_violation USING MESSAGE = 'Packages are to big for this vehicle ' || _vehicleID;
-    end if;
 
     if (waga > (select v.max_weight from vehicles v where v.id = _vehicleID)) then
         RAISE unique_violation USING MESSAGE = 'Packages weight too much for this vehicle ' || _vehicleID;

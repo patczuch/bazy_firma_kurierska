@@ -79,9 +79,6 @@ def register():
     except Exception as e:
         pg_conn.rollback()
         return jsonify({'error': str(e)}), 400
-    finally:
-        pg_cur.close()
-        db_pool.putconn(pg_conn)
         
     if existing_user:
         return jsonify({"error": "User already exists"}), 400
@@ -93,6 +90,9 @@ def register():
     except Exception as e:
         pg_conn.rollback()
         return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
 
     return jsonify({"success": "User registered successfully"}), 201
 
