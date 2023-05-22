@@ -35,7 +35,7 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 
 ## Do poprawy lub uzupełnienia (27 kwietnia 2023)
 - ~~przedstawić opis problemu na początku README~~<br />
-- zastanowić się nad podejściem do przechowywania danych w PersonInfo<br />
+- ~~zastanowić się nad podejściem do przechowywania danych w PersonInfo~~<br />
 - ~~dodać spis (listę) funkcji (np. z linkami do kodu)~~<br />
 - ~~dodawać komentarze do kodu sql~~<br />
 - opisać kluczowe tabele i funkcje (ale jak coś jest oczywiste to nie mieszać)<br />
