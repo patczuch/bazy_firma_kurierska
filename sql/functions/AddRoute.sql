@@ -7,7 +7,6 @@ create  or replace function addRoute(_time timestamp, _sourceID integer, _destin
 as
 $$
 declare
-    objetosc integer := 0;
     waga integer := 0;
     _routeID integer := (select max(id) from routes) + 1;
     _pacID integer;
@@ -40,7 +39,7 @@ begin
         RAISE unique_violation USING MESSAGE = 'Vehicle with id ' || _vehicleID || ' has planned route on this time!';
     end if;
 
-    -- obliczanie wspólnej wagi oraz objętości
+    -- obliczanie wspólnej wagi
     foreach _pacID in array _packcagesID loop
         if (NOT EXISTS (select * from packages where id = _pacID)) then
             RAISE unique_violation USING MESSAGE = 'Package with id ' || _pacID || ' doesnt exist!';
