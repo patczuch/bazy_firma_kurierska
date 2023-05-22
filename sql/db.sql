@@ -730,43 +730,6 @@ COPY public.packagedimensions (id, name, dimension_x, dimension_y, dimension_z) 
 --
 
 COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id, pickedup_time) FROM stdin;
-3	1.20000	2	5	6	2	\N
-1	5.00000	2	1	2	2	2023-04-25 10:25:46.795572
-5	0.10000	1	9	10	2	\N
-6	0.10000	1	11	12	2	\N
-7	0.10000	1	13	14	2	\N
-8	0.10000	1	15	16	2	\N
-9	0.10000	1	17	18	2	\N
-16	0.30000	2	31	32	2	\N
-17	0.10000	1	33	34	2	\N
-18	0.10000	1	35	36	2	\N
-19	0.10000	1	37	38	2	\N
-20	0.10000	1	39	40	2	\N
-21	0.10000	1	41	42	2	\N
-23	0.10000	1	45	46	2	\N
-24	0.10000	1	47	48	2	\N
-4	0.20000	2	7	8	2	\N
-2	0.50000	1	3	4	2	\N
-11	0.30000	1	21	22	1	\N
-12	0.30000	1	23	24	1	\N
-10	0.10000	1	19	20	1	\N
-13	0.30000	2	25	26	2	\N
-14	0.30000	2	27	28	2	\N
-25	1.20000	2	49	50	1	\N
-26	0.40000	3	51	52	1	\N
-27	0.40000	4	53	54	1	\N
-28	0.10000	1	55	56	1	\N
-29	0.20000	1	57	58	1	\N
-30	0.30000	1	59	60	1	\N
-31	0.20000	1	61	62	1	\N
-15	0.30000	2	29	30	2	2023-05-17 22:09:59.800314
-22	0.10000	1	43	44	2	2023-05-17 22:10:04.673201
-32	0.30000	2	63	64	2	\N
-33	0.40000	1	65	66	2	\N
-34	0.30000	1	67	68	2	\N
-35	0.20000	1	69	70	2	\N
-36	0.30000	1	71	72	2	\N
-37	0.30000	1	73	74	2	\N
 \.
 
 
@@ -775,54 +738,6 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 --
 
 COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM stdin;
-1	1	1	2023-04-21 23:33:19
-3	2	2	2023-04-23 18:03:41.04
-4	3	1	2023-04-23 18:33:55.79
-5	4	2	2023-04-24 17:09:52.81
-6	2	1	2023-04-25 09:57:35.609408
-7	4	1	2023-04-25 09:57:35.609408
-8	1	2	2023-04-25 10:25:43.317601
-9	5	1	2023-05-17 13:08:54.52
-10	6	1	2023-05-17 13:13:03.78
-11	7	1	2023-05-17 13:13:11.89
-12	8	1	2023-05-17 13:14:51.06
-13	9	1	2023-05-17 13:14:52.74
-14	10	1	2023-05-17 13:15:16.2
-15	11	1	2023-05-17 13:15:26.05
-16	12	1	2023-05-17 13:15:50.08
-17	13	2	2023-05-17 13:25:27.84
-18	14	2	2023-05-17 13:26:46.98
-19	15	2	2023-05-17 14:07:25.49
-20	16	1	2023-05-17 14:28:29.21
-21	17	1	2023-05-17 14:35:32.36
-22	18	1	2023-05-17 14:35:56.55
-23	19	1	2023-05-17 14:35:59.27
-28	24	1	2023-05-17 15:19:01.71
-27	23	1	2023-05-17 14:38:51.33
-24	20	1	2023-05-17 14:36:04.74
-25	21	1	2023-05-17 14:37:53.47
-26	22	1	2023-05-17 14:38:44.57
-29	22	2	2023-05-17 19:00:33
-30	21	2	2023-05-17 19:00:37
-31	25	2	2023-05-17 19:03:36
-32	26	2	2023-05-17 19:16:07.6
-33	27	2	2023-05-17 19:16:11.04
-34	28	2	2023-05-17 19:47:53.81
-35	29	2	2023-05-17 19:48:07.65
-36	30	2	2023-05-17 19:48:11.1
-37	31	2	2023-05-17 19:48:16.45
-38	32	1	2023-05-18 19:38:02.27
-39	33	1	2023-05-18 19:39:15.78
-40	34	1	2023-05-18 19:41:00.91
-41	35	1	2023-05-18 19:41:27.84
-42	2	2	2023-05-18 23:00:08.490918
-43	4	2	2023-05-18 23:00:08.490918
-44	2	1	2023-05-18 23:00:33.844903
-45	4	1	2023-05-18 23:00:33.844903
-46	2	2	2023-05-18 23:00:36.664725
-47	4	2	2023-05-18 23:00:36.664725
-48	36	1	2023-05-19 17:13:46.46
-49	37	1	2023-05-19 17:13:56.39
 \.
 
 
@@ -923,6 +838,16 @@ COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 72			
 73			
 74			
+75	 test1		
+76	test2		
+77	Jan Kowalski	987654321	
+78	Zenon Nowak	123456789	
+79	Jan Kowalski	987654321	
+80	Zenon Nowak	123456789	
+81	Jan Kowalski	987654321	
+82	Zenon Nowak	123456789	
+83	Jan Kowalski	987654321	
+84	Zenon Nowak	123456789	
 \.
 
 
@@ -931,14 +856,6 @@ COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 --
 
 COPY public.routepackages (route_id, package_id) FROM stdin;
-1	1
-2	2
-2	4
-3	2
-3	4
-4	5
-4	9
-4	16
 \.
 
 
@@ -947,10 +864,6 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 --
 
 COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_id, completed, source_parcelpoint_id) FROM stdin;
-1	2023-04-21 23:40:19	2	1	1	t	1
-3	2023-04-26 10:40:19	2	1	1	t	1
-2	2023-04-24 10:40:19	1	1	1	f	2
-4	2023-05-20 17:27:00	2	1	1	f	1
 \.
 
 
@@ -975,11 +888,11 @@ COPY public.users (id, courier_id, parcelpoint_id, email, password_hash, admin) 
 8	\N	4	punktpaczkowy4@gmail.com	$2b$12$RWehN9ew7eNi.Eotkce.P.MR/LcxWr.y/nndvM5LZq8K86GOkuECe	f
 17	3	\N	kurier3@gmail.com	$2b$12$WRVdEeuVCaJRnUvFFu.yLuc9rx.LJDJsA40ZzripBsVnyTTsYXKGW	f
 12	\N	8	punktpaczkowy8@gmail.com	$2b$12$pRazwitV7piVZ8jsiGvxv.l2VN.N90Haay2cxUSidI./YA56E0Qbi	f
-10	\N	6	punktpaczkowy6@gmail.com	$2b$12$FwM7iicWYOWpgpvg5gqAnOpM2n5BOedkUTp8/YRQrMgYvc3jp8MkC	f
 14	\N	10	punktpaczkowy10@gmail.com	$2b$12$OhXGjYc7VAeAzYx6x1kEO.PHcENNC/q1nqOGw9.tGMZ0RVmBCIVTG	f
 7	\N	3	punktpaczkowy3@gmail.com	$2b$12$fL/zp7xU7c5u5X57oJbl7u8oZ6gxFpjVe7XYKmXArWulFAwEloqfG	f
 15	1	\N	kurier1@gmail.com	$2b$12$8uDI7vTJUU4.zotbnjN5xO.FF3RUTeGIJ.HOsXBUobckOBr4Q5eGO	f
 24	10	\N	kurier10@gmail.com	$2b$12$iCwiygJdSI5ryAsNvKbV/OmNJl473YjHAbZtQOO4nxXzIWQB.s5KO	f
+26	\N	6	punktpaczkowy6@gmail.com6	$2b$12$dJXEEiP62rP5jSoOGZUxKOcNPhq5iOW2N42WDkJA2IUUOrUa9RnwK	f
 \.
 
 
@@ -1005,7 +918,7 @@ COPY public.vehicles (id, registration_plate, max_weight) FROM stdin;
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 25, true);
+SELECT pg_catalog.setval('public.users_id_seq', 26, true);
 
 
 --
