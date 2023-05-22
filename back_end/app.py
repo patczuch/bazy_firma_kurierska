@@ -406,7 +406,7 @@ def finish_route():
 #DOSTEPNE DLA ADMINOW
 @app.route('/new_courier', methods=['POST'], strict_slashes=False)
 @jwt_required()
-def new_package():
+def new_courier():
     user_id = get_jwt_identity()
     if not authenticate(user_id) or not authenticate(user_id)["admin"]:
         return jsonify({'error': 'Authentication error!'}), 401
