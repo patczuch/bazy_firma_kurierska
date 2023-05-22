@@ -1,7 +1,9 @@
 import React from "react";
 
 const Home = () => (
-    <h1>Strona główna</h1>
+    <div style={{textAlign: "center", marginTop:"10em"}}>
+        <img src="logo.png"></img>
+    </div>
 );
 
 export default Home;
