@@ -36,6 +36,7 @@ db_pool = psycopg2.pool.SimpleConnectionPool(
 if __name__ == '__main__':
     app.run(host=os.getenv("app_host"), port="5000")#, ssl_context='adhoc')
 
+#DOSTEPNE DLA WSZYSTKICH
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -98,7 +99,6 @@ def register():
 
 @app.route('/tracking', methods=['POST'], strict_slashes=False)
 def get_package_history():
-    #print("test", file=sys.stdout)
     sql = "select * from packagetrackinghistory(%s)"
     pg_conn = db_pool.getconn()
     try:
@@ -115,73 +115,12 @@ def get_package_history():
         
     return jsonify(data), 200
 
-@app.route('/create_route', methods=['POST'], strict_slashes=False)
-def create_route():
-    #print("test", file=sys.stdout)
-    sql = "select addroute(%s,%s,%s,%s,%s,%s)"
+@app.route('/package_dimensions', methods=['GET'], strict_slashes=False)
+def get_package_dimensions():
     pg_conn = db_pool.getconn()
     try:
         pg_cur = pg_conn.cursor()
-        pg_cur.execute(sql, (request.json['route_time'],request.json['source_packagepoint_id'],
-                             request.json['destination_packagepoint_id'],request.json['vehicle'],request.json['courier'],request.json['selected_packages'],))
-        pg_conn.commit()
-    except Exception as e:
-        pg_conn.rollback()
-        return jsonify({'error': str(e)}), 400
-    finally:
-        pg_cur.close()
-        db_pool.putconn(pg_conn)
-        
-    return jsonify({"success": "Route added successfully"}), 200
-
-@app.route('/pickup_package', methods=['POST'], strict_slashes=False)
-@jwt_required()
-def pickup_package():
-    sql = "select parcelpointid from packagelocation(%s)"
-    pg_conn = db_pool.getconn()
-    try:
-        pg_cur = pg_conn.cursor()
-        pg_cur.execute(sql, (request.json['package_id'],))
-        data = pg_cur.fetchone()
-        pg_conn.commit()
-    except Exception as e:
-        pg_conn.rollback()
-        return jsonify({'error': str(e)}), 400
-    finally:
-        pg_cur.close()
-        db_pool.putconn(pg_conn)
-        
-    
-    user_id = get_jwt_identity()
-    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(data[0]) or data[0] == -1:
-        return jsonify({'error': 'Authentication error!'}), 401
-    
-    sql2 = "select pickuppackage(%s)"
-    try:
-        pg_cur = pg_conn.cursor()
-        pg_cur.execute(sql2, (request.json['package_id'],))
-        pg_conn.commit()
-    except Exception as e:
-        pg_conn.rollback()
-        return jsonify({'error': str(e)}), 400
-    finally:
-        pg_cur.close()
-        db_pool.putconn(pg_conn)
-        
-    return jsonify({'success':'Succesfuly registered pickup'}), 200
-
-@app.route('/parcelpoint_packages', methods=['POST'], strict_slashes=False)
-@jwt_required()
-def get_parcelpoint_packages():
-    #print("test", file=sys.stdout)
-    user_id = get_jwt_identity()
-    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"]:
-        return jsonify({'error': 'Authentication error!'}), 401
-    sql = "select getcontentsofparcelpoint(%s)"
-    pg_conn = db_pool.getconn()
-    try:
-        pg_cur = pg_conn.cursor()
-        pg_cur.execute(sql, (authenticate(user_id)["parcelpoint_id"],))
+        pg_cur.execute("select id, name, dimension_x, dimension_y, dimension_z from packagedimensions")
         data = pg_cur.fetchall()
         pg_conn.commit()
     except Exception as e:
@@ -192,43 +131,44 @@ def get_parcelpoint_packages():
         db_pool.putconn(pg_conn)
         
     res = []
-    for id in data:
-        package_info = get_package_info(id[0])
-        if package_info is not None:
-            res.append(package_info)
-    return jsonify(res), 200
-
-@app.route('/routes', methods=['POST'], strict_slashes=False)
-@jwt_required()
-def get_routes():
-    user_id = get_jwt_identity()
-    if not authenticate(user_id) or not authenticate(user_id)["courier_id"]:
-        return jsonify({'error': 'Authentication error!'}), 401
-    sql = "select routes.id, time, registration_plate, source_parcelpoint_id, destination_parcelpoint_id from routes inner join vehicles on vehicles.id = vehicle_id where courier_id = %s and completed = false"
-    pg_conn = db_pool.getconn()
-    try:
-        pg_cur = pg_conn.cursor()
-        pg_cur.execute(sql, (authenticate(user_id)["courier_id"],))
-        data = pg_cur.fetchall()
-        pg_conn.commit()
-    except Exception as e:
-        pg_conn.rollback()
-        return jsonify({'error': str(e)}), 400
-    finally:
-        pg_cur.close()
-        db_pool.putconn(pg_conn)
-        
-    res = []
-    for route in data:
+    for dim in data:
         res.append({
-            "id": route[0],
-            "time": route[1],
-            "vehicle_reg_plate": route[2],
-            "source_parcelpoint_id": route[3],
-            "destination_parcelpoint_id": route[4]
+            "id": dim[0],
+            "name": dim[1],
+            "dimension_x": dim[2],
+            "dimension_y": dim[3],
+            "dimension_z": dim[4]
         })
-    return jsonify(res), 200
+    return res, 200
 
+@app.route('/parcelpoints', methods=['GET'], strict_slashes=False)
+def get_parcelpoints():
+    pg_conn = db_pool.getconn()
+    try:
+        pg_cur = pg_conn.cursor()
+        pg_cur.execute("select id, name, city, street, house_number, apartment_number from parcelpoints")
+        data = pg_cur.fetchall()
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+        
+    res = []
+    for parcelpoint in data:
+        res.append({
+            "id": parcelpoint[0],
+            "name": parcelpoint[1],
+            "city": parcelpoint[2],
+            "street": parcelpoint[3],
+            "house_number": parcelpoint[4],
+            "apartment_number": parcelpoint[5]
+        })
+    return res, 200
+
+#DOSTEPNE DLA WSZYSTKICH PRACOWNIKOW
 @app.route('/vehicles', methods=['GET'], strict_slashes=False)
 @jwt_required()
 def get_vehicles():
@@ -292,6 +232,146 @@ def get_couriers():
         })
     return res, 200
 
+#DOSTEPNE DLA PRACOWNIKOW PUNKTOW
+@app.route('/new_package', methods=['POST'], strict_slashes=False)
+@jwt_required()
+def new_package():
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(request.json['source_packagepoint_id']):
+        return jsonify({'error': 'Authentication error!'}), 401
+    sql = "select registerpackage(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+    pg_conn = db_pool.getconn()
+    try:
+        pg_cur = pg_conn.cursor()
+        pg_cur.execute(sql, (request.json['weight'], request.json['dimensions_id'], request.json['recipient_name'], request.json['recipient_phone_number'], request.json['sender_name'],
+                            request.json['sender_phone_number'], request.json['destination_packagepoint_id'], request.json['source_packagepoint_id'], request.json['recipient_email'],
+                            request.json['sender_email'],))
+        id = pg_cur.fetchone()[0]
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+    return jsonify({'success':'Succesfuly registered new package, ID: ' + str(id)}), 200
+
+@app.route('/create_route', methods=['POST'], strict_slashes=False)
+@jwt_required()
+def create_route():
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(request.json['source_packagepoint_id']):
+        return jsonify({'error': 'Authentication error!'}), 401
+    sql = "select addroute(%s,%s,%s,%s,%s,%s)"
+    pg_conn = db_pool.getconn()
+    try:
+        pg_cur = pg_conn.cursor()
+        pg_cur.execute(sql, (request.json['route_time'],request.json['source_packagepoint_id'],
+                             request.json['destination_packagepoint_id'],request.json['vehicle'],request.json['courier'],request.json['selected_packages'],))
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+        
+    return jsonify({"success": "Route added successfully"}), 200
+
+@app.route('/pickup_package', methods=['POST'], strict_slashes=False)
+@jwt_required()
+def pickup_package():
+    sql = "select parcelpointid from packagelocation(%s)"
+    pg_conn = db_pool.getconn()
+    try:
+        pg_cur = pg_conn.cursor()
+        pg_cur.execute(sql, (request.json['package_id'],))
+        data = pg_cur.fetchone()
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+        
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(data[0]) or data[0] == -1:
+        return jsonify({'error': 'Authentication error!'}), 401
+    
+    sql2 = "select pickuppackage(%s)"
+    try:
+        pg_cur = pg_conn.cursor()
+        pg_cur.execute(sql2, (request.json['package_id'],))
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+        
+    return jsonify({'success':'Succesfuly registered pickup'}), 200
+
+@app.route('/parcelpoint_packages', methods=['POST'], strict_slashes=False)
+@jwt_required()
+def get_parcelpoint_packages():
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"]:
+        return jsonify({'error': 'Authentication error!'}), 401
+    sql = "select getcontentsofparcelpoint(%s)"
+    pg_conn = db_pool.getconn()
+    try:
+        pg_cur = pg_conn.cursor()
+        pg_cur.execute(sql, (authenticate(user_id)["parcelpoint_id"],))
+        data = pg_cur.fetchall()
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+        
+    res = []
+    for id in data:
+        package_info = get_package_info(id[0])
+        if package_info is not None:
+            res.append(package_info)
+    return jsonify(res), 200
+
+#DOSTEPNE DLA KURIEROW
+@app.route('/routes', methods=['POST'], strict_slashes=False)
+@jwt_required()
+def get_routes():
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or not authenticate(user_id)["courier_id"]:
+        return jsonify({'error': 'Authentication error!'}), 401
+    sql = "select routes.id, time, registration_plate, source_parcelpoint_id, destination_parcelpoint_id from routes inner join vehicles on vehicles.id = vehicle_id where courier_id = %s and completed = false"
+    pg_conn = db_pool.getconn()
+    try:
+        pg_cur = pg_conn.cursor()
+        pg_cur.execute(sql, (authenticate(user_id)["courier_id"],))
+        data = pg_cur.fetchall()
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+        
+    res = []
+    for route in data:
+        res.append({
+            "id": route[0],
+            "time": route[1],
+            "vehicle_reg_plate": route[2],
+            "source_parcelpoint_id": route[3],
+            "destination_parcelpoint_id": route[4]
+        })
+    return jsonify(res), 200
+
 @app.route('/finish_route', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def finish_route():
@@ -323,13 +403,20 @@ def finish_route():
         
     return jsonify({'success':'Route succesfully finished'}), 200
 
-@app.route('/package_dimensions', methods=['GET'], strict_slashes=False)
-def get_package_dimensions():
+#DOSTEPNE DLA ADMINOW
+@app.route('/new_courier', methods=['POST'], strict_slashes=False)
+@jwt_required()
+def new_package():
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or not authenticate(user_id)["admin"]:
+        return jsonify({'error': 'Authentication error!'}), 401
+    
+    sql = "select addcourier(%s,%s,%s)"
     pg_conn = db_pool.getconn()
     try:
         pg_cur = pg_conn.cursor()
-        pg_cur.execute("select id, name, dimension_x, dimension_y, dimension_z from packagedimensions")
-        data = pg_cur.fetchall()
+        pg_cur.execute(sql, (request.json['first_name'],request.json['last_name'],
+                             request.json['phone_number'],))
         pg_conn.commit()
     except Exception as e:
         pg_conn.rollback()
@@ -338,24 +425,21 @@ def get_package_dimensions():
         pg_cur.close()
         db_pool.putconn(pg_conn)
         
-    res = []
-    for dim in data:
-        res.append({
-            "id": dim[0],
-            "name": dim[1],
-            "dimension_x": dim[2],
-            "dimension_y": dim[3],
-            "dimension_z": dim[4]
-        })
-    return res, 200
+    return jsonify({"success": "Courier added successfully"}), 200
 
-@app.route('/parcelpoints', methods=['GET'], strict_slashes=False)
-def get_parcelpoints():
+@app.route('/new_parcelpoint', methods=['POST'], strict_slashes=False)
+@jwt_required()
+def new_parcelpoint():
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or not authenticate(user_id)["admin"]:
+        return jsonify({'error': 'Authentication error!'}), 401
+    
+    sql = "select addparcelpoint(%s,%s,%s,%s,%s)"
     pg_conn = db_pool.getconn()
     try:
         pg_cur = pg_conn.cursor()
-        pg_cur.execute("select id, name, city, street, house_number, apartment_number from parcelpoints")
-        data = pg_cur.fetchall()
+        pg_cur.execute(sql, (request.json['name'],request.json['city'],
+                             request.json['street'],request.json['house_number'],request.json['apartment_number'],))
         pg_conn.commit()
     except Exception as e:
         pg_conn.rollback()
@@ -364,19 +448,33 @@ def get_parcelpoints():
         pg_cur.close()
         db_pool.putconn(pg_conn)
         
-    res = []
-    for parcelpoint in data:
-        #print(parcelpoint)
-        res.append({
-            "id": parcelpoint[0],
-            "name": parcelpoint[1],
-            "city": parcelpoint[2],
-            "street": parcelpoint[3],
-            "house_number": parcelpoint[4],
-            "apartment_number": parcelpoint[5]
-        })
-    return res, 200
+    return jsonify({"success": "Parcel point added successfully"}), 200
 
+@app.route('/new_vehicle', methods=['POST'], strict_slashes=False)
+@jwt_required()
+def new_vehicle():
+    user_id = get_jwt_identity()
+    if not authenticate(user_id) or not authenticate(user_id)["admin"]:
+        return jsonify({'error': 'Authentication error!'}), 401
+    
+    sql = "select addvehicle(%s,%s)"
+    pg_conn = db_pool.getconn()
+    try:
+        pg_cur = pg_conn.cursor()
+        pg_cur.execute(sql, (request.json['registration_number'],request.json['max_weight'],))
+        pg_conn.commit()
+    except Exception as e:
+        pg_conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        pg_cur.close()
+        db_pool.putconn(pg_conn)
+        
+    return jsonify({"success": "Vehicle added successfully"}), 200
+
+#TODO NADAWANIE UPRAWNIEN
+
+#FUNKCJE POMOCNICZE
 def get_package_info(id):
     sql = "select weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id from packages where id = %s"
     sql2 = "select name, phone_number, email from personinfo where id = %s"
@@ -413,30 +511,6 @@ def get_package_info(id):
         "recipient_email": recipient_info[2],
         "destination_packagepoint_id": package_info[4]
     }
-
-@app.route('/new_package', methods=['POST'], strict_slashes=False)
-@jwt_required()
-def new_package():
-    user_id = get_jwt_identity()
-    #print(authenticate(user_id))
-    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(request.json['source_packagepoint_id']):
-        return jsonify({'error': 'Authentication error!'}), 401
-    sql = "select registerpackage(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
-    pg_conn = db_pool.getconn()
-    try:
-        pg_cur = pg_conn.cursor()
-        pg_cur.execute(sql, (request.json['weight'], request.json['dimensions_id'], request.json['recipient_name'], request.json['recipient_phone_number'], request.json['sender_name'],
-                            request.json['sender_phone_number'], request.json['destination_packagepoint_id'], request.json['source_packagepoint_id'], request.json['recipient_email'],
-                            request.json['sender_email'],))
-        id = pg_cur.fetchone()[0]
-        pg_conn.commit()
-    except Exception as e:
-        pg_conn.rollback()
-        return jsonify({'error': str(e)}), 400
-    finally:
-        pg_cur.close()
-        db_pool.putconn(pg_conn)
-    return jsonify({'success':'Succesfuly registered new package, ID: ' + str(id)}), 200
 
 def authenticate(id):
     sql = "select id, courier_id, parcelpoint_id, email, admin from users where id = %s"
