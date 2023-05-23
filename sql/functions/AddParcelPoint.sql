@@ -1,4 +1,4 @@
-create function addParcelPoint (_name varchar, _city varchar, _street varchar,
+create or replace function addParcelPoint (_name varchar, _city varchar, _street varchar,
                                 _houseNumber varchar, _apartmentNumber varchar) returns integer
 language plpgsql
 -- dodaje nowy punkt paczkowy, przyjmuje nazwe oraz kolejne częći adresu, zwraca nowe id
@@ -6,7 +6,7 @@ language plpgsql
 as
 $$
 declare
-    _id integer := (select max(id) from parcelpoints) + 1;
+    _id integer := (select COALESCE(max(id),0) from parcelpoints) + 1;
 
 begin
 

@@ -6,7 +6,7 @@ create  or replace function addPackageDimension(_name varchar(20), _dimX decimal
 as
 $$
 declare
-    _dimensionID integer := (select max(id) from packagedimensions) + 1;
+    _dimensionID integer := (select COALESCE(max(id),0) from packagedimensions) + 1;
 begin
     if (length(_name) <= 0) then
         RAISE unique_violation USING MESSAGE = 'Name cant be empty !';

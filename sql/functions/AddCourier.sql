@@ -1,10 +1,10 @@
-create function addCourier (_firstname varchar, _lastname varchar, _phoneNumber varchar) returns integer
+create or replace function addCourier (_firstname varchar, _lastname varchar, _phoneNumber varchar) returns integer
     language plpgsql
     -- dodaje nowego kuriera, zwraca jego id
 as
 $$
 declare
-    _id integer := (select max(id) from couriers) + 1;
+    _id integer := (select COALESCE(max(id),0) from couriers) + 1;
 
 begin
 

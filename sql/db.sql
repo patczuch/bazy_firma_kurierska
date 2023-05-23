@@ -52,37 +52,37 @@ COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
 
 CREATE FUNCTION public.addcourier(_firstname character varying, _lastname character varying, _phonenumber character varying) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-declare
-    _id integer := (select max(id) from couriers) + 1;
-
-begin
-
-    if (length(_firstname) <= 0) then
-        RAISE unique_violation USING MESSAGE = 'Couriers firstname cant be empty!';
-    end if;
-
-    if (length(_lastname) <= 0) then
-        RAISE unique_violation USING MESSAGE = 'Couriers lastname cant be empty!';
-    end if;
-
-    if (length(_phoneNumber) <= 0) then
-        RAISE unique_violation USING MESSAGE = 'Couriers phone number cant be empty!';
-    end if;
-
-
-    if (exists(select * from couriers where phone_number = _phoneNumber)) then
-        RAISE unique_violation USING MESSAGE = 'Courier with this phone number already exists!';
-    end if;
-
-
-    insert into couriers(id, first_name, last_name, phone_number)
-        values (_id, _firstname, _lastname, _phoneNumber);
-
-    return _id;
-
-end;
-
+    AS $$
+declare
+    _id integer := (select COALESCE(max(id),0) from couriers) + 1;
+
+begin
+
+    if (length(_firstname) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Couriers firstname cant be empty!';
+    end if;
+
+    if (length(_lastname) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Couriers lastname cant be empty!';
+    end if;
+
+    if (length(_phoneNumber) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Couriers phone number cant be empty!';
+    end if;
+
+
+    if (exists(select * from couriers where phone_number = _phoneNumber)) then
+        RAISE unique_violation USING MESSAGE = 'Courier with this phone number already exists!';
+    end if;
+
+
+    insert into couriers(id, first_name, last_name, phone_number)
+        values (_id, _firstname, _lastname, _phoneNumber);
+
+    return _id;
+
+end;
+
 $$;
 
 
@@ -96,7 +96,7 @@ CREATE FUNCTION public.addpackagedimension(_name character varying, _dimx numeri
     LANGUAGE plpgsql
     AS $$
 declare
-    _dimensionID integer := (select max(id) from packagedimensions) + 1;
+    _dimensionID integer := (select COALESCE(max(id),0) from packagedimensions) + 1;
 begin
     if (length(_name) <= 0) then
         RAISE unique_violation USING MESSAGE = 'Name cant be empty !';
@@ -138,48 +138,49 @@ ALTER FUNCTION public.addpackagedimension(_name character varying, _dimx numeric
 
 CREATE FUNCTION public.addparcelpoint(_name character varying, _city character varying, _street character varying, _housenumber character varying, _apartmentnumber character varying) RETURNS integer
     LANGUAGE plpgsql
-    AS $$
-declare
-    _id integer := (select max(id) from parcelpoints) + 1;
-
-begin
-
-    if (length(_name) <= 0) then
-        RAISE unique_violation USING MESSAGE = 'Parcel point name cant be empty!';
-    end if;
-
-    if (length(_city) <= 0) then
-        RAISE unique_violation USING MESSAGE = 'City name cant be empty!';
-    end if;
-
-    if (length(_street) <= 0) then
-        RAISE unique_violation USING MESSAGE = 'Street name cant be empty!';
-    end if;
-
-    if (length(_houseNumber) <= 0) then
-        RAISE unique_violation USING MESSAGE = 'House number cant be empty!';
-    end if;
-
-
-    if (exists(select * from parcelpoints where name = _name)) then
-        RAISE unique_violation USING MESSAGE = 'Parcel point with this name already exists!';
-    end if;
-
-    if (exists(select * from parcelpoints where city = _city AND street = _street AND
-                                                house_number = _houseNumber AND
-                                                apartment_number = _apartmentNumber)) then
-
-        RAISE unique_violation USING MESSAGE = 'Parcel point at this address already exists!';
-    end if;
-
-
-    insert into parcelpoints(id, name, city, street, house_number, apartment_number)
-        values (_id, _name, _city, _street, _houseNumber, _apartmentNumber);
-
-    return _id;
-
-end;
-
+    AS $$
+declare
+    _id integer := (select COALESCE(max(id),0) from parcelpoints) + 1;
+
+begin
+
+    if (length(_name) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Parcel point name cant be empty!';
+    end if;
+
+    if (length(_city) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'City name cant be empty!';
+    end if;
+
+    if (length(_street) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'Street name cant be empty!';
+    end if;
+
+    if (length(_houseNumber) <= 0) then
+        RAISE unique_violation USING MESSAGE = 'House number cant be empty!';
+    end if;
+
+
+    if (exists(select * from parcelpoints where name = _name)) then
+        RAISE unique_violation USING MESSAGE = 'Parcel point with this name already exists!';
+    end if;
+
+    -- czy w tym miejscu nie ma innego punktu
+    if (exists(select * from parcelpoints where city = _city AND street = _street AND
+                                                house_number = _houseNumber AND
+                                                apartment_number = _apartmentNumber)) then
+
+        RAISE unique_violation USING MESSAGE = 'Parcel point at this address already exists!';
+    end if;
+
+
+    insert into parcelpoints(id, name, city, street, house_number, apartment_number)
+        values (_id, _name, _city, _street, _houseNumber, _apartmentNumber);
+
+    return _id;
+
+end;
+
 $$;
 
 
@@ -193,14 +194,13 @@ CREATE FUNCTION public.addroute(_time timestamp without time zone, _sourceid int
     LANGUAGE plpgsql
     AS $$
 declare
-    objetosc integer := 0;
     waga integer := 0;
-    _routeID integer := (select max(id) from routes) + 1;
+    _routeID integer := (select COALESCE(max(id),0) from routes) + 1;
     _pacID integer;
 begin
-    if (_time < now() ) then
-        RAISE unique_violation USING MESSAGE = 'Cant create route in past !';
-    end if;
+    --if (_time < now() ) then
+    --    RAISE unique_violation USING MESSAGE = 'Cant create route in past !';
+    --end if;
 
     if (NOT EXISTS (select * from parcelpoints where id = _sourceID)) then
         RAISE unique_violation USING MESSAGE = 'Package point with id ' || _sourceID || ' doesnt exist!';
@@ -226,7 +226,7 @@ begin
         RAISE unique_violation USING MESSAGE = 'Vehicle with id ' || _vehicleID || ' has planned route on this time!';
     end if;
 
-    -- obliczanie wspólnej wagi oraz objętości
+    -- obliczanie wspólnej wagi
     foreach _pacID in array _packcagesID loop
         if (NOT EXISTS (select * from packages where id = _pacID)) then
             RAISE unique_violation USING MESSAGE = 'Package with id ' || _pacID || ' doesnt exist!';
@@ -264,7 +264,7 @@ CREATE FUNCTION public.addvehicle(_registrationplate character varying, _maxweig
     LANGUAGE plpgsql
     AS $$
 declare
-    _vehicleID integer := (select max(id) from vehicles) + 1;
+    _vehicleID integer := (select COALESCE(max(id),0) from vehicles) + 1;
 begin
     if (length(_registrationPlate) <= 0) then
         RAISE unique_violation USING MESSAGE = 'Registration plate cant be empty !';
@@ -730,6 +730,26 @@ COPY public.packagedimensions (id, name, dimension_x, dimension_y, dimension_z) 
 --
 
 COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id, pickedup_time) FROM stdin;
+2	2.10000	3	3	4	1	\N
+3	4.80000	2	5	6	4	\N
+4	1.90000	4	7	8	3	\N
+5	6.20000	1	9	10	2	\N
+6	3.90000	3	11	12	3	\N
+7	2.30000	2	13	14	4	\N
+8	5.70000	4	15	16	1	\N
+9	1.50000	1	17	18	2	\N
+10	4.20000	3	19	20	3	\N
+11	2.80000	2	21	22	1	\N
+12	3.20000	3	23	24	1	\N
+13	5.10000	1	25	26	4	\N
+14	1.70000	4	27	28	3	\N
+15	4.90000	3	29	30	4	\N
+16	2.50000	2	31	32	2	\N
+17	6.30000	1	33	34	4	\N
+18	1.30000	4	35	36	1	\N
+19	3.70000	3	37	38	2	\N
+20	4.40000	2	39	40	3	\N
+1	3.50000	1	1	2	2	2023-05-23 13:40:04.818529
 \.
 
 
@@ -738,6 +758,29 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 --
 
 COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM stdin;
+1	1	1	2023-01-05 10:30:00
+2	2	2	2023-01-10 14:45:00
+3	3	3	2023-01-15 09:20:00
+4	4	4	2023-01-20 16:55:00
+5	5	1	2023-01-25 11:40:00
+6	6	2	2023-01-30 13:15:00
+7	7	3	2023-02-04 08:50:00
+8	8	4	2023-02-09 17:25:00
+9	9	1	2023-02-14 12:10:00
+10	10	2	2023-02-19 15:35:00
+11	11	3	2023-02-24 10:00:00
+12	12	4	2023-03-01 18:25:00
+13	13	1	2023-03-06 13:10:00
+14	14	2	2023-03-11 16:35:00
+15	15	3	2023-03-16 11:00:00
+16	16	4	2023-03-21 19:25:00
+17	17	1	2023-03-26 14:10:00
+18	18	2	2023-03-31 17:35:00
+19	19	3	2023-04-05 12:00:00
+20	20	4	2023-04-10 20:25:00
+21	1	2	2023-05-23 13:39:16.557545
+22	9	2	2023-05-23 13:39:16.557545
+23	5	2	2023-05-23 13:39:16.557545
 \.
 
 
@@ -764,90 +807,46 @@ COPY public.parcelpoints (id, name, city, street, house_number, apartment_number
 --
 
 COPY public.personinfo (id, name, phone_number, email) FROM stdin;
-1	Jan Kowalski	123456789	\N
-2	Tomasz Nowak	987654321	\N
-3	Olaf Kudłacz	123456789	
-4	Radosław Cegła	321654876	
-5	Tomasz Misztal	123456123	
-6	Jan Nowak	568901233	
-7			
-8			
-9	'	'	'
-10	'	'	'
-11	asdasd		
-12			
-13	asdasd		
-14			
-15	asdasd		
-16			
-17	asdasd		
-18			
-19	asdasd		
-20			
-21	asdasd		
-22			
-23	asdasd		
-24			
-25	Jan Kowalski	987654321	
-26	Zenon Nowak	123456789	
-27	Jan Kowalski	987654321	
-28	Zenon Nowak	123456789	
-29	Jan Kowalski	987654321	
-30	Zenon Nowak	123456789	
-31	Jan Kowalski	987654321	
-32	Zenon Nowak	123456789	
-33			
-34			
-35			
-36			
-37			
-38			
-39			
-40			
-41			
-42			
-43			
-44			
-45			
-46			
-47			
-48			
-49			
-50			
-51			
-52			
-53			
-54			
-55			
-56			
-57			
-58			
-59			
-60			
-61			
-62			
-63	Jan Kowalski	987654321	
-64	Zenon Nowak	123456789	
-65			
-66			
-67			
-68			
-69			
-70			
-71			
-72			
-73			
-74			
-75	 test1		
-76	test2		
-77	Jan Kowalski	987654321	
-78	Zenon Nowak	123456789	
-79	Jan Kowalski	987654321	
-80	Zenon Nowak	123456789	
-81	Jan Kowalski	987654321	
-82	Zenon Nowak	123456789	
-83	Jan Kowalski	987654321	
-84	Zenon Nowak	123456789	
+1	John Smith	1234567890	john@example.com
+2	Jane Doe	0987654321	jane@example.com
+3	Michael Johnson	5551234567	michael@example.com
+4	Emily Williams	9876543210	emily@example.com
+5	David Brown	1112223333	david@example.com
+6	Jessica Davis	4445556666	jessica@example.com
+7	Andrew Wilson	7778889999	andrew@example.com
+8	Olivia Taylor	2223334444	olivia@example.com
+9	Christopher Martin	6667778888	christopher@example.com
+10	Sophia Anderson	9990001111	sophia@example.com
+11	Jennifer Wilson	1112223333	jennifer@example.com
+12	Matthew Thompson	4445556666	matthew@example.com
+13	Emma Davis	7778889999	emma@example.com
+14	Daniel Martinez	2223334444	daniel@example.com
+15	Ava Anderson	6667778888	ava@example.com
+16	Alexander White	9990001111	alexander@example.com
+17	Sophie Clark	1234567890	sophie@example.com
+18	Josephine Turner	0987654321	josephine@example.com
+19	William Walker	5551234567	william@example.com
+20	Grace Mitchell	9876543210	grace@example.com
+21	Liam Turner	1112223333	liam@example.com
+22	Abigail Scott	4445556666	abigail@example.com
+23	Benjamin Lee	7778889999	benjamin@example.com
+24	Harper Thompson	2223334444	harper@example.com
+25	Elijah Davis	6667778888	elijah@example.com
+26	Mia White	9990001111	mia@example.com
+27	James Clark	1234567890	james@example.com
+28	Nora Turner	0987654321	nora@example.com
+29	Lucas Adams	5551234567	lucas@example.com
+30	Scarlett Mitchell	9876543210	scarlett@example.com
+31	Henry Baker	1112223333	henry@example.com
+32	Lily Evans	4445556666	lily@example.com
+33	Samuel Parker	7778889999	samuel@example.com
+34	Chloe Collins	2223334444	chloe@example.com
+35	Daniel Wood	6667778888	daniel@example.com
+36	Elizabeth Reed	9990001111	elizabeth@example.com
+37	Aiden Stewart	1234567890	aiden@example.com
+38	Victoria Turner	0987654321	victoria@example.com
+39	Jackson Morris	5551234567	jackson@example.com
+40	Penelope Wright	9876543210	penelope@example.com
 \.
 
 
@@ -856,6 +855,9 @@ COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 --
 
 COPY public.routepackages (route_id, package_id) FROM stdin;
+1	1
+1	9
+1	5
 \.
 
 
@@ -864,6 +866,7 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 --
 
 COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_id, completed, source_parcelpoint_id) FROM stdin;
+1	2023-05-03 13:20:00	2	1	1	t	1
 \.
 
 
@@ -909,8 +912,8 @@ COPY public.vehicles (id, registration_plate, max_weight) FROM stdin;
 6	PQR678	1700.50000
 7	STU901	2100.75000
 8	VWX234	1600.25000
-9	YZA567	2300.50000
-10	BCD890	1400.75000
+10	BCD890	10.75000
+9	YZA567	5.50000
 \.
 
 

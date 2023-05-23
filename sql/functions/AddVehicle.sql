@@ -5,7 +5,7 @@ create  or replace function addVehicle(_registrationPlate varchar(10), _maxWeigh
 as
 $$
 declare
-    _vehicleID integer := (select max(id) from vehicles) + 1;
+    _vehicleID integer := (select COALESCE(max(id),0) from vehicles) + 1;
 begin
     if (length(_registrationPlate) <= 0) then
         RAISE unique_violation USING MESSAGE = 'Registration plate cant be empty !';

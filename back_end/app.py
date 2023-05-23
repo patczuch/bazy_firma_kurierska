@@ -300,6 +300,7 @@ def pickup_package():
         return jsonify({'error': 'Authentication error!'}), 401
     
     sql2 = "select pickuppackage(%s)"
+    pg_conn = db_pool.getconn()
     try:
         pg_cur = pg_conn.cursor()
         pg_cur.execute(sql2, (request.json['package_id'],))
@@ -362,13 +363,28 @@ def get_routes():
         db_pool.putconn(pg_conn)
         
     res = []
+    sql2 = "select package_id from routepackages where route_id = %s"
     for route in data:
+        pg_conn = db_pool.getconn()
+        try:
+            pg_cur = pg_conn.cursor()
+            pg_cur.execute(sql2, (route[0],))
+            data2 = pg_cur.fetchall()
+            pg_conn.commit()
+        except Exception as e:
+            pg_conn.rollback()
+            return jsonify({'error': str(e)}), 400
+        finally:
+            pg_cur.close()
+            db_pool.putconn(pg_conn)
+
         res.append({
             "id": route[0],
             "time": route[1],
             "vehicle_reg_plate": route[2],
             "source_parcelpoint_id": route[3],
-            "destination_parcelpoint_id": route[4]
+            "destination_parcelpoint_id": route[4],
+            "packages": data2
         })
     return jsonify(res), 200
 

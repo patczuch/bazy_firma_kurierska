@@ -8,7 +8,7 @@ as
 $$
 declare
     waga integer := 0;
-    _routeID integer := (select max(id) from routes) + 1;
+    _routeID integer := (select COALESCE(max(id),0) from routes) + 1;
     _pacID integer;
 begin
     if (_time < now() ) then

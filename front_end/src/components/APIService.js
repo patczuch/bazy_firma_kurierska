@@ -4,7 +4,7 @@ export default class APIService{
     static port = "5000";
 
     static create_route(body, token){
-        console.log(JSON.stringify(body))
+        //console.log(JSON.stringify(body))
         return fetch('http://' + this.host + ':' + this.port + '/create_route',{
             'method':'POST',
             headers : {'Content-Type':'application/json', 

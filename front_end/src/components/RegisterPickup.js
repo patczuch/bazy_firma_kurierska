@@ -25,7 +25,7 @@ export function RegisterPickup(props) {
           else
             alert(response["error"])
           window.location.reload(false); 
-          //console.log(response)
+          console.log(response)
         })
         .catch(error => console.log('error',error))
       }
