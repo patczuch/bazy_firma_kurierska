@@ -49,6 +49,19 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 
 <img src="img/schemat.png" alt="Schemat">
 
+## Bardziej szczegółowy opis kluczowych tabel
+1. 
+CREATE TABLE public.packages (
+    id integer NOT NULL,
+    weight numeric(10,5) NOT NULL, - waga wyrażona liczbą zmiennoprzecinokową
+    dimensions_id integer NOT NULL, - klucz obcy do tabeli z rodzajami rozmiarów (czyli rozmiary nie mogą być dowolne)
+    sender_info_id integer NOT NULL, - id nadawcy z tabeli personinfo
+    recipient_info_id integer NOT NULL, - id odbiorcy z tabeli personinfo
+    destination_packagepoint_id integer NOT NULL, - id punktu paczkowego do którego paczka zmierza 
+    pickedup_time timestamp without time zone - czas odebrania (przed tą akcja to pole jest równe NULL)
+);
+ALTER TABLE public.packages OWNER TO postgres;
+
 ## Funkcje SQL
 [Dodanie kuriera](./sql/functions/AddCourier.sql)<br />
 [Dodanie rozmiaru paczki](./sql/functions/AddPackageDimension.sql)<br />
