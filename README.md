@@ -25,6 +25,7 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 <img src="img/login.png" width="150px">
 3. Rejestracja <br />
 <img src="img/register.png" width="150px">
+
 ### Pracownik punktu
 1. Zarejestrowanie nowej przesyłki <br />
 <img src="img/new_package.png" width="250px">
