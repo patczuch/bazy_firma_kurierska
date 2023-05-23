@@ -50,7 +50,7 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 <img src="img/schemat.png" alt="Schemat">
 
 ## Bardziej szczegółowy opis kluczowych tabel
-1. <img src="img/tabela1.png">
+1. <br /> <img src="img/tabela1.png">
 
 
 ## Funkcje SQL
