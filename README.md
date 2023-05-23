@@ -49,23 +49,29 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 
 <img src="img/schemat.png" alt="Schemat">
 
+## Szczegółowy opis kluczowych tabel
+1. tabela packages <br />  <br /><img src="img/tabela1.png">
+2. tabela routes <br />  <br /><img src="img/tabela2.png">
+3. tabela users <br /> <br /> <img src="img/tabela3.png">
+4. tabela routepackages <br />  <br /><img src="img/tabela4.png">
+5. tabela parcelpointpackages <br />  <br /><img src="img/tabela5.png">
+
 ## Funkcje SQL
 [Dodanie kuriera](./sql/functions/AddCourier.sql)<br />
 [Dodanie rozmiaru paczki](./sql/functions/AddPackageDimension.sql)<br />
 [Dodanie punktu paczkowego](./sql/functions/AddParcelPoint.sql)<br />
 [Dodanie wehikułu](./sql/functions/AddVehicle.sql)<br />
-[Zarejestrowanie nowej paczki](./sql/functions/RegisterPackage.sql)<br />
-DO OPISANIA<br />
+[Zarejestrowanie nowej paczki](./sql/functions/RegisterPackage.sql)<br /> <br />
+<img src="img/RegisterPackage.png"> <br />
 [Potwierdzenie odebrania paczki](./sql/functions/PickUpPackage.sql)<br />
-[Lista paczek w punkcie](./sql/functions/GetContentsOfParcelPoint.sql)<br />
+[Lista paczek w punkcie](./sql/functions/GetContentsOfParcelPoint.sql)<br /> <br />
 DO POPRAWIENIA I OPISANIA<br />
 [Lokalizacja paczki](./sql/functions/PackageLocation.sql)<br />
-[Historia podróży paczki](./sql/functions/PackageTrackingHistory.sql)<br />
-DO OPISANIA<br />
+[Historia podróży paczki](./sql/functions/PackageTrackingHistory.sql)<br /> <br />
+<img src="img/PackageTrackingHistory.png"> <br />
 [Dodanie trasy przewozowej](./sql/functions/AddRoute.sql)<br />
-DO OPISANIA<br />
-[Potwierdzenie odbycia trasy](./sql/functions/CompleteRoute.sql)<br />
-DO OPISANIA<br />
+[Potwierdzenie odbycia trasy](./sql/functions/CompleteRoute.sql)<br /> <br />
+<img src="img/CompleteRoute.png"> <br />
 
 ## Backend
 Backend naszego projektu został wykonany w Pythonie przy pomocy frameworka Flask. Do porozumienia z bazą PostgreSQL korzystaliśmy również z biblioteki psycopg2. Kod źródłowy wszystkich endpointów znajduje się w pliku [app.py](./back_end/app.py).
@@ -116,7 +122,7 @@ DO ZROBIENIA
 - ~~dodać spis (listę) funkcji (np. z linkami do kodu)~~<br />
 - ~~dodawać komentarze do kodu sql~~<br />
 - opisać kluczowe tabele i funkcje (ale jak coś jest oczywiste to nie mieszać)<br />
-- dokumentacja w jednym pliku (w miarę liniowa - bez linków itp.)<br />
+- ~~dokumentacja w jednym pliku (w miarę liniowa - bez linków itp.)~~<br />
 - zarysować architekturę backendu (Python + Flask) w dokumentacji<br />
 - testy do backendu w Postman'ie<br />
 - wnioski czy to dobrze ze zrobilismy tak ze procedury sa w postgresie i tylko je wywolujemy przez backend
