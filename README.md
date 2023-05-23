@@ -65,7 +65,7 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 <img src="img/RegisterPackage.png"> <br />
 [Potwierdzenie odebrania paczki](./sql/functions/PickUpPackage.sql)<br />
 [Lista paczek w punkcie](./sql/functions/GetContentsOfParcelPoint.sql)<br /> <br />
-DO POPRAWIENIA I OPISANIA<br />
+<img src="img/tabela7.png"> <br />
 [Lokalizacja paczki](./sql/functions/PackageLocation.sql)<br />
 [Historia podróży paczki](./sql/functions/PackageTrackingHistory.sql)<br /> <br />
 <img src="img/PackageTrackingHistory.png"> <br />
