@@ -61,16 +61,16 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 [Dodanie rozmiaru paczki](./sql/functions/AddPackageDimension.sql)<br />
 [Dodanie punktu paczkowego](./sql/functions/AddParcelPoint.sql)<br />
 [Dodanie wehikułu](./sql/functions/AddVehicle.sql)<br />
-[Zarejestrowanie nowej paczki](./sql/functions/RegisterPackage.sql)<br />
+[Zarejestrowanie nowej paczki](./sql/functions/RegisterPackage.sql)<br /> <br />
 <img src="img/RegisterPackage.png">
 [Potwierdzenie odebrania paczki](./sql/functions/PickUpPackage.sql)<br />
-[Lista paczek w punkcie](./sql/functions/GetContentsOfParcelPoint.sql)<br />
+[Lista paczek w punkcie](./sql/functions/GetContentsOfParcelPoint.sql)<br /> <br />
 DO POPRAWIENIA I OPISANIA<br />
 [Lokalizacja paczki](./sql/functions/PackageLocation.sql)<br />
-[Historia podróży paczki](./sql/functions/PackageTrackingHistory.sql)<br />
+[Historia podróży paczki](./sql/functions/PackageTrackingHistory.sql)<br /> <br />
 <img src="img/PackageTrackingHistory.png">
 [Dodanie trasy przewozowej](./sql/functions/AddRoute.sql)<br />
-[Potwierdzenie odbycia trasy](./sql/functions/CompleteRoute.sql)<br />
+[Potwierdzenie odbycia trasy](./sql/functions/CompleteRoute.sql)<br /> <br />
 <img src="img/CompleteRoute.png">
 
 ## Backend
