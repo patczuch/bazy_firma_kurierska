@@ -72,6 +72,7 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 [Dodanie trasy przewozowej](./sql/functions/AddRoute.sql)<br />
 [Potwierdzenie odbycia trasy](./sql/functions/CompleteRoute.sql)<br /> <br />
 <img src="img/CompleteRoute.png"> <br />
+[Zaktualizowanie uprawnień użytkownika](./sql/functions/UpdateUserPrivileges.sql)<br /> <br />
 
 ## Backend
 Backend naszego projektu został wykonany w Pythonie przy pomocy frameworka Flask. Do porozumienia z bazą PostgreSQL korzystaliśmy również z biblioteki psycopg2. Kod źródłowy wszystkich endpointów znajduje się w pliku [app.py](./back_end/app.py).
