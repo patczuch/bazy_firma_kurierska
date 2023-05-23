@@ -54,6 +54,7 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 2. <br /> <img src="img/tabela2.png">
 3. <br /> <img src="img/tabela3.png">
 4. <br /> <img src="img/tabela4.png">
+5. <br /> <img src="img/tabela5.png">
 
 ## Funkcje SQL
 [Dodanie kuriera](./sql/functions/AddCourier.sql)<br />
