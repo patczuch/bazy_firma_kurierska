@@ -61,7 +61,7 @@ DO OPISANIA<br />
 DO POPRAWIENIA I OPISANIA<br />
 [Lokalizacja paczki](./sql/functions/PackageLocation.sql)<br />
 [Historia podróży paczki](./sql/functions/PackageTrackingHistory.sql)<br />
-DO OPISANIA<br />
+<img src="img/PackageTrackingHistory.png" width="500px">
 [Dodanie trasy przewozowej](./sql/functions/AddRoute.sql)<br />
 DO OPISANIA<br />
 [Potwierdzenie odbycia trasy](./sql/functions/CompleteRoute.sql)<br />
