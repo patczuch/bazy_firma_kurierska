@@ -53,7 +53,7 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 [Dodanie kuriera](./sql/functions/AddCourier.sql)<br />
 [Dodanie rozmiaru paczki](./sql/functions/AddPackageDimension.sql)<br />
 [Dodanie punktu paczkowego](./sql/functions/AddParcelPoint.sql)<br />
-[Dodanie pojazdu](./sql/functions/AddVehicle.sql)<br />
+[Dodanie wehikułu](./sql/functions/AddVehicle.sql)<br />
 [Zarejestrowanie nowej paczki](./sql/functions/RegisterPackage.sql)<br />
 DO OPISANIA<br />
 [Potwierdzenie odebrania paczki](./sql/functions/PickUpPackage.sql)<br />
