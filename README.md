@@ -50,11 +50,11 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 <img src="img/schemat.png" alt="Schemat">
 
 ## Szczegółowy opis kluczowych tabel
-1. tabela packages <br /> <img src="img/tabela1.png">
-2. tabela routes <br /> <img src="img/tabela2.png">
-3. tabela users <br /> <img src="img/tabela3.png">
-4. tabela routepackages <br /> <img src="img/tabela4.png">
-5. tabela parcelpointpackages <br /> <img src="img/tabela5.png">
+1. tabela packages <br />  <br /><img src="img/tabela1.png">
+2. tabela routes <br />  <br /><img src="img/tabela2.png">
+3. tabela users <br /> <br /> <img src="img/tabela3.png">
+4. tabela routepackages <br />  <br /><img src="img/tabela4.png">
+5. tabela parcelpointpackages <br />  <br /><img src="img/tabela5.png">
 
 ## Funkcje SQL
 [Dodanie kuriera](./sql/functions/AddCourier.sql)<br />
