@@ -18,6 +18,7 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 
 ## Funkcje dostępne dla użytkowników
 ### Każdy użytkownik
+
 1. Śledzenie przesyłek <br />
 <img src="img/tracking.png" width="500px">
 2. Logowanie <br />
@@ -32,10 +33,12 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 <img src="img/packages_at_point.png" width="800px">
 4. Utworzenie trasy dla kuriera <br />
 <img src="img/new_route.png" width="400px">
+
 ### Kurier
 1. Wyświetlenie tras <br />
 2. Potwierdzenie odbycia trasy <br />
 <img src="img/routes.png" width="800px">
+
 ### Admin
 1. Dodanie kuriera
 2. Dodanie punktu paczkowego
