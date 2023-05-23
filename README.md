@@ -115,7 +115,7 @@ DO ZROBIENIA
 - ~~dodać spis (listę) funkcji (np. z linkami do kodu)~~<br />
 - ~~dodawać komentarze do kodu sql~~<br />
 - opisać kluczowe tabele i funkcje (ale jak coś jest oczywiste to nie mieszać)<br />
-- dokumentacja w jednym pliku (w miarę liniowa - bez linków itp.)<br />
+- ~~dokumentacja w jednym pliku (w miarę liniowa - bez linków itp.)~~<br />
 - zarysować architekturę backendu (Python + Flask) w dokumentacji<br />
 - testy do backendu w Postman'ie<br />
 - wnioski czy to dobrze ze zrobilismy tak ze procedury sa w postgresie i tylko je wywolujemy przez backend
