@@ -121,7 +121,7 @@ DO ZROBIENIA
 - ~~zastanowić się nad podejściem do przechowywania danych w PersonInfo~~<br />
 - ~~dodać spis (listę) funkcji (np. z linkami do kodu)~~<br />
 - ~~dodawać komentarze do kodu sql~~<br />
-- opisać kluczowe tabele i funkcje (ale jak coś jest oczywiste to nie mieszać)<br />
+- ~~opisać kluczowe tabele i funkcje (ale jak coś jest oczywiste to nie mieszać)~~<br />
 - ~~dokumentacja w jednym pliku (w miarę liniowa - bez linków itp.)~~<br />
 - zarysować architekturę backendu (Python + Flask) w dokumentacji<br />
 - testy do backendu w Postman'ie<br />
