@@ -18,10 +18,22 @@ begin
             select package_id, max(time) as last_update
             from parcelpointpackages
             group by package_id
-        ) as T1
+        ) as T1     -- wszystkie paczki z czasem przybycia do ich ostatniego punktu paczkowego
+
+        inner join (
+            select P.id as package_id
+            from packages P
+            EXCEPT
+            select P.id as package_id
+            from packages P
+            inner join routepackages RP on P.id = RP.package_id
+            inner join routes R on RP.route_id = R.id
+            where R.completed = false
+        ) as T2 on T1.package_id = T2.package_id    -- paczki które NIE są aktualnie w trasie
+
         inner join parcelpointpackages as PPP on T1.package_id = PPP.package_id
-        inner join packages p on PPP.package_id = p.id
-        where T1.last_update = PPP.time and PPP.parcelpoint_id = _parcelPointID and pickedup_time IS NULL;
+        inner join packages P on PPP.package_id = P.id
+        where PPP.time = T1.last_update and PPP.parcelpoint_id = _parcelPointID and P.pickedup_time IS NULL;
 
 end;
 $$;

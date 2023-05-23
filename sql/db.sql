@@ -335,25 +335,37 @@ ALTER FUNCTION public.completeroute(_routeid integer) OWNER TO postgres;
 
 CREATE FUNCTION public.getcontentsofparcelpoint(_parcelpointid integer) RETURNS TABLE(waiting_package_id integer)
     LANGUAGE plpgsql
-    AS $$
-begin
-
-    if (not exists(select * from parcelpoints where id = _parcelPointID)) then
-        RAISE unique_violation USING MESSAGE = 'Parcel point with this ID dont exists!';
-    end if;
-
-    return query
-        select T1.package_id
-        from (
-            select package_id, max(time) as last_update
-            from parcelpointpackages
-            group by package_id
-        ) as T1
-        inner join parcelpointpackages as PPP on T1.package_id = PPP.package_id
-        inner join packages p on PPP.package_id = p.id
-        where T1.last_update = PPP.time and PPP.parcelpoint_id = _parcelPointID and pickedup_time IS NULL;
-
-end;
+    AS $$
+begin
+
+    if (not exists(select * from parcelpoints where id = _parcelPointID)) then
+        RAISE unique_violation USING MESSAGE = 'Parcel point with this ID dont exists!';
+    end if;
+
+    return query
+        select T1.package_id
+        from (
+            select package_id, max(time) as last_update
+            from parcelpointpackages
+            group by package_id
+        ) as T1     -- wszystkie paczki z czasem przybycia do ich ostatniego punktu paczkowego
+
+        inner join (
+            select P.id as package_id
+            from packages P
+            EXCEPT
+            select P.id as package_id
+            from packages P
+            inner join routepackages RP on P.id = RP.package_id
+            inner join routes R on RP.route_id = R.id
+            where R.completed = false
+        ) as T2 on T1.package_id = T2.package_id    -- paczki które NIE są aktualnie w trasie
+
+        inner join parcelpointpackages as PPP on T1.package_id = PPP.package_id
+        inner join packages P on PPP.package_id = P.id
+        where PPP.time = T1.last_update and PPP.parcelpoint_id = _parcelPointID and P.pickedup_time IS NULL;
+
+end;
 $$;
 
 
@@ -513,6 +525,33 @@ end;$$;
 
 
 ALTER FUNCTION public.registerpackage(_weight numeric, _dimensions_id integer, _recipient_name character varying, _recipient_phone_number character varying, _sender_name character varying, _sender_phone_number character varying, _destination_packagepoint_id integer, _source_packagepoint_id integer, _recipient_email character varying, _sender_email character varying) OWNER TO postgres;
+
+--
+-- Name: updateuserprivileges(integer, integer, integer, boolean); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.updateuserprivileges(_id integer, _courier_id integer, _parcelpoint_id integer, _admin boolean) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+    begin
+
+        if (NOT EXISTS (select * from users where id = _id)) then
+            RAISE unique_violation USING MESSAGE = 'User with this ID does not exist!';
+        end if;
+
+        if (_courier_id IS NOT NULL AND _parcelpoint_id IS NOT NULL) then
+            RAISE unique_violation USING MESSAGE = 'User cannot be courier and parcelpoint at the same time!';
+        end if;
+
+        update users set courier_id = _courier_id, parcelpoint_id = _parcelpoint_id, admin = _admin
+            where id = _id;
+
+        return _id;
+    end;
+$$;
+
+
+ALTER FUNCTION public.updateuserprivileges(_id integer, _courier_id integer, _parcelpoint_id integer, _admin boolean) OWNER TO postgres;
 
 SET default_tablespace = '';
 
