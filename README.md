@@ -69,8 +69,9 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 8. [Lokalizacja paczki](./sql/functions/PackageLocation.sql)<br />
 9. [Historia podróży paczki](./sql/functions/PackageTrackingHistory.sql)<br /> <br />
 <img src="img/PackageTrackingHistory.png"> <br />
-10. [Dodanie trasy przewozowej](./sql/functions/AddRoute.sql)<br />
-11. [Potwierdzenie odbycia trasy](./sql/functions/CompleteRoute.sql)<br /> <br />
+10. [Dodanie trasy przewozowej](./sql/functions/AddRoute.sql)<br /> <br />
+ <img src="img/addRoute.png"> <br />
+12. [Potwierdzenie odbycia trasy](./sql/functions/CompleteRoute.sql)<br /> <br />
 <img src="img/CompleteRoute.png"> <br />
 12. [Zaktualizowanie uprawnień użytkownika](./sql/functions/UpdateUserPrivileges.sql)<br /> <br />
 
