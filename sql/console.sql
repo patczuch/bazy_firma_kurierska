@@ -137,3 +137,5 @@ VALUES
     (18, 18, 2, TIMESTAMP '2023-03-31 17:35:00'),
     (19, 19, 3, TIMESTAMP '2023-04-05 12:00:00'),
     (20, 20, 4, TIMESTAMP '2023-04-10 20:25:00');
+
+select updateuserprivileges(25,null,null,true)

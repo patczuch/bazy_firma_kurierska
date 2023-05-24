@@ -8,7 +8,7 @@ $$
 declare
     _pacID integer;
     _destinationID integer;
-    _pppID integer := (select max(id) from parcelpointpackages) + 1;
+    _pppID integer := (select COALESCE(max(id),0) from parcelpointpackages) + 1;
 begin
     if (NOT EXISTS (select * from routes where id = _routeID)) then
         RAISE unique_violation USING MESSAGE = 'Route with id ' || _routeID || ' doesnt exist!';

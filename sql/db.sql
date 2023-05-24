@@ -480,10 +480,10 @@ CREATE FUNCTION public.registerpackage(_weight numeric, _dimensions_id integer, 
     LANGUAGE plpgsql
     AS $$
 declare
-    sender_id int := (select max(id) from personinfo)+1;
+    sender_id int := (select COALESCE(max(id),0) from personinfo)+1;
     recipient_id int := sender_id + 1;
-    _package_id int := (select max(id) from packages)+1;
-    parcelpointpackages_id int := (select max(id) from parcelpointpackages)+1;
+    _package_id int := (select COALESCE(max(id),0) from packages)+1;
+    parcelpointpackages_id int := (select COALESCE(max(id),0) from parcelpointpackages)+1;
 begin
     if (NOT EXISTS (select * from parcelpoints where id = _destination_packagepoint_id)) then
         RAISE unique_violation USING MESSAGE = 'Package point with id ' || _destination_packagepoint_id || ' doesnt exist!';
@@ -789,6 +789,9 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 19	3.70000	3	37	38	2	\N
 20	4.40000	2	39	40	3	\N
 1	3.50000	1	1	2	2	2023-05-23 13:40:04.818529
+21	7.00000	2	41	42	2	2023-05-24 11:32:45.126903
+22	1.30000	2	43	44	2	\N
+23	1.30000	2	45	46	2	\N
 \.
 
 
@@ -820,6 +823,11 @@ COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM st
 21	1	2	2023-05-23 13:39:16.557545
 22	9	2	2023-05-23 13:39:16.557545
 23	5	2	2023-05-23 13:39:16.557545
+25	21	2	2023-05-24 11:32:24.870334
+26	16	2	2023-05-24 11:32:24.870334
+24	21	4	2023-05-24 11:30:33.23
+27	22	1	2023-05-24 11:52:05.69
+28	23	1	2023-05-24 11:54:16.94
 \.
 
 
@@ -886,6 +894,12 @@ COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 38	Victoria Turner	0987654321	victoria@example.com
 39	Jackson Morris	5551234567	jackson@example.com
 40	Penelope Wright	9876543210	penelope@example.com
+41	test1	123	test1@gmail.com
+42	test2	345	test2@gmail.com
+43	Jan Kowalski	987654321	jan@gmail.com
+44	Zenon Nowak	123456789	zenon@gmail.com
+45	Jan Kowalski	987654321	jan@gmail.com
+46	Zenon Nowak	123456789	zenon@gmail.com
 \.
 
 
@@ -897,6 +911,8 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 1	1
 1	9
 1	5
+2	21
+2	16
 \.
 
 
@@ -906,6 +922,7 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 
 COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_id, completed, source_parcelpoint_id) FROM stdin;
 1	2023-05-03 13:20:00	2	1	1	t	1
+2	2023-05-24 11:31:00	2	10	3	t	4
 \.
 
 

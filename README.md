@@ -57,22 +57,22 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 5. tabela parcelpointpackages <br />  <br /><img src="img/tabela5.png">
 
 ## Funkcje SQL
-[Dodanie kuriera](./sql/functions/AddCourier.sql)<br />
-[Dodanie rozmiaru paczki](./sql/functions/AddPackageDimension.sql)<br />
-[Dodanie punktu paczkowego](./sql/functions/AddParcelPoint.sql)<br />
-[Dodanie wehikułu](./sql/functions/AddVehicle.sql)<br />
-[Zarejestrowanie nowej paczki](./sql/functions/RegisterPackage.sql)<br /> <br />
+1. [Dodanie kuriera](./sql/functions/AddCourier.sql)<br />
+2. [Dodanie rozmiaru paczki](./sql/functions/AddPackageDimension.sql)<br />
+3. [Dodanie punktu paczkowego](./sql/functions/AddParcelPoint.sql)<br />
+4. [Dodanie wehikułu](./sql/functions/AddVehicle.sql)<br />
+5. [Zarejestrowanie nowej paczki](./sql/functions/RegisterPackage.sql)<br /> <br />
 <img src="img/RegisterPackage.png"> <br />
-[Potwierdzenie odebrania paczki](./sql/functions/PickUpPackage.sql)<br />
-[Lista paczek w punkcie](./sql/functions/GetContentsOfParcelPoint.sql)<br /> <br />
+6. [Potwierdzenie odebrania paczki](./sql/functions/PickUpPackage.sql)<br />
+7. [Lista paczek w punkcie](./sql/functions/GetContentsOfParcelPoint.sql)<br /> <br />
 <img src="img/tabela7.png"> <br />
-[Lokalizacja paczki](./sql/functions/PackageLocation.sql)<br />
-[Historia podróży paczki](./sql/functions/PackageTrackingHistory.sql)<br /> <br />
+8. [Lokalizacja paczki](./sql/functions/PackageLocation.sql)<br />
+9. [Historia podróży paczki](./sql/functions/PackageTrackingHistory.sql)<br /> <br />
 <img src="img/PackageTrackingHistory.png"> <br />
-[Dodanie trasy przewozowej](./sql/functions/AddRoute.sql)<br />
-[Potwierdzenie odbycia trasy](./sql/functions/CompleteRoute.sql)<br /> <br />
+10. [Dodanie trasy przewozowej](./sql/functions/AddRoute.sql)<br />
+11. [Potwierdzenie odbycia trasy](./sql/functions/CompleteRoute.sql)<br /> <br />
 <img src="img/CompleteRoute.png"> <br />
-[Zaktualizowanie uprawnień użytkownika](./sql/functions/UpdateUserPrivileges.sql)<br /> <br />
+12. [Zaktualizowanie uprawnień użytkownika](./sql/functions/UpdateUserPrivileges.sql)<br /> <br />
 
 ## Backend
 Backend naszego projektu został wykonany w Pythonie przy pomocy frameworka Flask. Do porozumienia z bazą PostgreSQL korzystaliśmy również z biblioteki psycopg2. Kod źródłowy wszystkich endpointów znajduje się w pliku [app.py](./back_end/app.py).
@@ -83,7 +83,11 @@ Adres: {{baseUrl}}/login, metoda: POST
 Adres: {{baseUrl}}/register, metoda: POST
 3. Śledzenie przesyłki <br />
 Adres: {{baseUrl}}/tracking, metoda: POST <br />
-DO OPISANIA
+<img src="img/backend_tracking.png" width="500px"> <br />
+<br />Przykładowe zapytanie w Postmanie zakończone sukcesem:
+<img src="img/tracking_postman_1.png" width="400px"> <br />
+<br />Przykładowe błędne zapytanie w Postmanie (id paczki niebędące integerem):
+<img src="img/tracking_postman_2.png" width="400px"> <br />
 4. Wymiary przesyłek <br />
 Adres: {{baseUrl}}/package_dimensions, metoda: GET
 5. Punkty paczkowe <br />
@@ -94,7 +98,13 @@ Adres: {{baseUrl}}/vehicles, metoda: GET
 Adres: {{baseUrl}}/couriers, metoda: GET
 8. Nowa paczka <br />
 Adres: {{baseUrl}}/new_package, metoda: POST <br />
-DO OPISANIA
+<img src="img/backend_new_package.png" width="700px"> <br />
+<br />W celu prawidłowego wykonania zapytania w zakładce Headers w Postmanie musimy dołączyć token autoryzacji:
+<img src="img/postman_authorization.png" width="700px"> <br />
+<br />Przykładowe zapytanie w Postmanie zakończone sukcesem:
+<img src="img/new_package_postman1.png" width="500px"> <br />
+<br />Przykładowe błędne zapytanie w Postmanie (ujemna waga):
+<img src="img/new_package_postman2.png" width="500px"> <br />
 9. Nowa trasa <br />
 Adres: {{baseUrl}}/create_route, metoda: POST <br />
 DO OPISANIA
@@ -115,7 +125,7 @@ Adres: {{baseUrl}}/new_parcelpoint, metoda: POST
 16. Nowy samochód <br />
 Adres: {{baseUrl}}/new_vehicle, metoda: POST
 17. Nadanie uprawnień kontom <br />
-DO ZROBIENIA
+Adres: {{baseUrl}}/set_permissions, metoda: POST
 
 ## Do poprawy lub uzupełnienia (27 kwietnia 2023)
 - ~~przedstawić opis problemu na początku README~~<br />

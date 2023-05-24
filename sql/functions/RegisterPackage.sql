@@ -1,14 +1,14 @@
-create function RegisterPackage(_weight numeric, _dimensions_id integer, _recipient_name character varying, _recipient_phone_number character varying, _sender_name character varying, _sender_phone_number character varying, _destination_packagepoint_id integer, _source_packagepoint_id integer, _recipient_email character varying DEFAULT NULL::character varying, _sender_email character varying DEFAULT NULL::character varying) returns integer
+create or replace function RegisterPackage(_weight numeric, _dimensions_id integer, _recipient_name character varying, _recipient_phone_number character varying, _sender_name character varying, _sender_phone_number character varying, _destination_packagepoint_id integer, _source_packagepoint_id integer, _recipient_email character varying DEFAULT NULL::character varying, _sender_email character varying DEFAULT NULL::character varying) returns integer
     language plpgsql
     -- funckja do rejestrowania nowej paczki, przyjmuje jej wage, id z tabeli rozmiarów, dane nadawcy oraz odbiorcy, id punktów paczkowych między 
     -- którymi będzie musiała się przemieścić, zwraca jej id
 as
 $$
 declare
-    sender_id int := (select max(id) from personinfo)+1;
+    sender_id int := (select COALESCE(max(id),0) from personinfo)+1;
     recipient_id int := sender_id + 1;
-    _package_id int := (select max(id) from packages)+1;
-    parcelpointpackages_id int := (select max(id) from parcelpointpackages)+1;
+    _package_id int := (select COALESCE(max(id),0) from packages)+1;
+    parcelpointpackages_id int := (select COALESCE(max(id),0) from parcelpointpackages)+1;
 begin
     if (NOT EXISTS (select * from parcelpoints where id = _destination_packagepoint_id)) then
         RAISE unique_violation USING MESSAGE = 'Package point with id ' || _destination_packagepoint_id || ' doesnt exist!';

@@ -24,8 +24,10 @@ export function NewRoute(props) {
             if (!response || response["error"])
                 alert("Wystąpił błąd. Trasa nie została stworzona.\n" + response["error"])
             else
+            {
+                window.location.reload(false); 
                 alert(response["success"])
-            window.location.reload(false); 
+            }
         })
         .catch(error => console.log('error',error))
       }
