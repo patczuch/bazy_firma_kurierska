@@ -328,23 +328,45 @@ def new_package():
 @app.route('/create_route', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def create_route():
+
+    #odczytujemy id użytkownika z jwt (JSON web token)
     user_id = get_jwt_identity()
-    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] or authenticate(user_id)["parcelpoint_id"] != int(request.json['source_packagepoint_id']):
+
+    #funkcja pomocnicza authenticate zwraca informacje o użytkowniku z bazy
+    #jeśli użytkownik o takim id nie istnieje, nie jest do niego przypisany punkt,
+    #lub próbuje utworzyć trase z punktu który do niego nie należy to błąd autoryzacji
+    if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"] \
+        or authenticate(user_id)["parcelpoint_id"] != int(request.json['source_packagepoint_id']):
         return jsonify({'error': 'Authentication error!'}), 401
+    
+    #tworzymy zapytanie sql
     sql = "select addroute(%s,%s,%s,%s,%s,%s)"
+
+    #łączymy się z bazą
     pg_conn = db_pool.getconn()
     try:
+        #tworzymy kursor do wykonywania zapytań
         pg_cur = pg_conn.cursor()
+
+        #wykonujemy zapytanie sql z parametrami podanymi w zapytaniu
         pg_cur.execute(sql, (request.json['route_time'],request.json['source_packagepoint_id'],
-                             request.json['destination_packagepoint_id'],request.json['vehicle'],request.json['courier'],request.json['selected_packages'],))
+                             request.json['destination_packagepoint_id'],request.json['vehicle'],
+                             request.json['courier'],request.json['selected_packages'],))
+        
+        #commitujemy transakcje
         pg_conn.commit()
+
+    #jeśli wystąpił błąd robimy rollback transakcji i zwracamy złapany błąd
     except Exception as e:
         pg_conn.rollback()
         return jsonify({'error': str(e)}), 400
+    
+    #niezależnie czy wystąpił błąd czy nie zamykamy kursor i połączenie z bazą
     finally:
         pg_cur.close()
         db_pool.putconn(pg_conn)
         
+    #zwracamy komunikat o sukcesie
     return jsonify({"success": "Route added successfully"}), 200
 
 #potwierdzenie odbioru paczki
@@ -388,28 +410,52 @@ def pickup_package():
 @app.route('/parcelpoint_packages', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def get_parcelpoint_packages():
+
+    #odczytujemy id użytkownika z jwt (JSON web token)
     user_id = get_jwt_identity()
+
+    #funkcja pomocnicza authenticate zwraca informacje o użytkowniku z bazy
+    #jeśli użytkownik o takim id nie istnieje lub nie jest do niego przypisany punkt to błąd autoryzacji
     if not authenticate(user_id) or not authenticate(user_id)["parcelpoint_id"]:
         return jsonify({'error': 'Authentication error!'}), 401
+    
+    #tworzymy zapytanie sql
     sql = "select getcontentsofparcelpoint(%s)"
+
+    #łączymy się z bazą
     pg_conn = db_pool.getconn()
     try:
+        #tworzymy kursor do wykonywania zapytań
         pg_cur = pg_conn.cursor()
+
+        #wykonujemy zapytanie sql z parametrami podanymi w zapytaniu
         pg_cur.execute(sql, (authenticate(user_id)["parcelpoint_id"],))
+
+        #zapisujemy wszystkie dane otrzymane z zapytania
         data = pg_cur.fetchall()
+
+        #commitujemy transakcje
         pg_conn.commit()
+
+    #jeśli wystąpił błąd robimy rollback transakcji i zwracamy złapany błąd
     except Exception as e:
         pg_conn.rollback()
         return jsonify({'error': str(e)}), 400
+    
+    #niezależnie czy wystąpił błąd czy nie zamykamy kursor i połączenie z bazą
     finally:
         pg_cur.close()
         db_pool.putconn(pg_conn)
         
+    #dla kazdej paczki tworzymy obiekt zawierający informacje o niej korzystając z funkcji
+    #pomocniczej get_package_info (jej kod poniżej)
     res = []
-    for id in data:
-        package_info = get_package_info(id[0])
+    for package in data:
+        package_info = get_package_info(package[0])
         if package_info is not None:
             res.append(package_info)
+    
+    #zwracamy paczki w punkcie
     return jsonify(res), 200
 
 #DOSTEPNE DLA KURIEROW
@@ -465,32 +511,52 @@ def get_routes():
 @app.route('/finish_route', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def finish_route():
+
+    #tworzymy polecenia sql
     sql = "select completeroute(%s)"
     sql2 = "select courier_id from routes where id = %s"
 
+    #odczytujemy id użytkownika z jwt (JSON web token)
     user_id = get_jwt_identity()
+
+    #funkcja pomocnicza authenticate zwraca informacje o użytkowniku z bazy
+    #jeśli użytkownik o takim id nie istnieje lub nie jest kurierem to błąd autoryzacji
     if not authenticate(user_id) or not authenticate(user_id)["courier_id"]:
         return jsonify({'error': 'Authentication error!'}), 401
     
+    #łączymy się z bazą
     pg_conn = db_pool.getconn()
     try:
+        #tworzymy kursor do wykonywania zapytań sql
         pg_cur = pg_conn.cursor()
 
+        #wykonujemy zapytanie 2, w celu sprawdzenia czy trasa którą chcemy zakończyć jest przypisana
+        #do kuriera wysyłającego zapytanie
         pg_cur.execute(sql2, (request.json['route_id'],))
         data = pg_cur.fetchone()
+
+        #jeśli nie jest zwracamy błąd autoryzacji
         if data[0] != authenticate(user_id)["courier_id"]:
             return jsonify({'error': 'Authentication error!'}), 401
 
+        #wykonujemy zapytanie 1 w celu potwierdzenia ukończenia trasy
         pg_cur.execute(sql, (request.json['route_id'],))
 
+        #commitujemy transakcję
         pg_conn.commit()
+
+    #jeśli wystąpił błąd robimy rollback transakcji i zwracamy złapany błąd
     except Exception as e:
         pg_conn.rollback()
         return jsonify({'error': str(e)}), 400
+    
+    
+    #niezależnie czy wystąpił błąd czy nie zamykamy kursor i połączenie z bazą
     finally:
         pg_cur.close()
         db_pool.putconn(pg_conn)
         
+    #zwracamy komunikat o sukcesie
     return jsonify({'success':'Route succesfully finished'}), 200
 
 #DOSTEPNE DLA ADMINOW
@@ -593,29 +659,44 @@ def set_permissions():
 
 #zwraca informacje o paczce
 def get_package_info(id):
-    sql = "select weight, dimensions_id, sender_info_id, recipient_info_id, destination_packagepoint_id from packages where id = %s"
+
+    #tworzymy zapytania sql
+    sql = "select weight, dimensions_id, sender_info_id, recipient_info_id, \
+                        destination_packagepoint_id from packages where id = %s"
     sql2 = "select name, phone_number, email from personinfo where id = %s"
 
+    #łaczymy się z bazą
     pg_conn = db_pool.getconn()
+
     try:
+        #tworzymy kursor do wykonywania zapytań sql
         pg_cur = pg_conn.cursor()
+
+        #wykonujemy 1 zapytanie - zapisujemy dane paczki z podanym id
         pg_cur.execute(sql, (id,))
         package_info = pg_cur.fetchone()
 
+        #wykonujemy 2 zapytanie - zapisujemy dane nadawcy paczki z podanym id
         pg_cur.execute(sql2, (package_info[2],))
         sender_info = pg_cur.fetchone()
 
+        #wykonujemy 2 zapytanie - zapisujemy dane odbiorcy paczki z podanym id
         pg_cur.execute(sql2, (package_info[3],))
         recipient_info = pg_cur.fetchone()
 
         pg_conn.commit()
+
+    #w wypadku wystąpienia błędu zwracamy None
     except Exception as e:
         pg_conn.rollback()
         return None
+    
+    #niezaleznie od tego czy wystąpił błąd czy nie zamykamy kursor i połączenie z bazą
     finally:
         pg_cur.close()
         db_pool.putconn(pg_conn)
         
+    #zwracamy odpowiednio uporządkowane dane
     return {
         "id": id,
         "weight": package_info[0],

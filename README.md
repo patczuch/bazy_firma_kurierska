@@ -110,17 +110,38 @@ Adres: {{baseUrl}}/new_package, metoda: POST <br />
 <img src="img/new_package_postman2.png" width="500px"> <br />
 9. Nowa trasa <br />
 Adres: {{baseUrl}}/create_route, metoda: POST <br />
+<img src="img/backend_new_route.png" width="600px"> <br />
+<br />W celu prawidłowego wykonania zapytania w zakładce Headers w Postmanie musimy dołączyć token autoryzacji:
+<img src="img/postman_authorization.png" width="700px"> <br />
+<br />Przykładowe zapytanie w Postmanie zakończone sukcesem:
+<img src="img/new_route_postman1.png" width="500px"> <br />
+<br />Przykładowe błędne zapytanie w Postmanie (TODO):
+<img src="img/new_route_postman2.png" width="500px"> <br />
 DO OPISANIA
 10. Potwierdzenie odebrania paczki <br />
 Adres: {{baseUrl}}/pickup_package, metoda: POST
 11. Przesyłki w punkcie <br />
 Adres: {{baseUrl}}/parcelpoint_packages, metoda: POST <br />
-DO OPISANIA
+<img src="img/backend_parcelpoint_packages.png" width="600px"> <br />
+<br />Funkcja pomocnicza zwracająca informacje o paczce (nie jest endpointem):
+<img src="img/backend_parcelpoint_packages_helper_f.png" width="500px"> <br />
+<br />W celu prawidłowego wykonania zapytania w zakładce Headers w Postmanie musimy dołączyć token autoryzacji:
+<img src="img/postman_authorization.png" width="700px"> <br />
+<br />Przykładowe zapytanie w Postmanie zakończone sukcesem:
+<img src="img/new_parcelpoint_packages_postman1.png" width="500px"> <br />
+<br />Przykładowe błędne zapytanie w Postmanie (TODO):
+<img src="img/new_parcelpoint_packages_postman2.png" width="500px"> <br />
 12. Trasy <br />
 Adres: {{baseUrl}}/routes, metoda: POST
 13. Potwierdzenie ukończenia trasy <br />
 Adres: {{baseUrl}}/finish_route, metoda: POST <br />
-DO OPISANIA
+<img src="img/backend_finish_route.png" width="600px"> <br />
+<br />W celu prawidłowego wykonania zapytania w zakładce Headers w Postmanie musimy dołączyć token autoryzacji:
+<img src="img/postman_authorization.png" width="700px"> <br />
+<br />Przykładowe zapytanie w Postmanie zakończone sukcesem:
+<img src="img/finish_route_postman1.png" width="500px"> <br />
+<br />Przykładowe błędne zapytanie w Postmanie (TODO):
+<img src="img/finish_route_postman2.png" width="500px"> <br />
 14. Nowy kurier <br />
 Adres: {{baseUrl}}/new_courier, metoda: POST
 15. Nowy punkt paczkowy <br />
