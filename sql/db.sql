@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 15.2
--- Dumped by pg_dump version 15.2
+-- Dumped from database version 15.3
+-- Dumped by pg_dump version 15.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -801,6 +801,10 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 30	9.70000	4	59	60	1	\N
 31	18.90000	2	61	62	3	\N
 32	13.20000	1	63	64	4	\N
+33	3.70000	3	65	66	3	\N
+34	14.70000	2	67	68	3	\N
+35	10.70000	3	69	70	3	2023-05-24 20:49:09.014089
+36	20.70000	3	71	72	4	2023-05-24 20:55:10.850525
 \.
 
 
@@ -849,6 +853,12 @@ COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM st
 38	30	2	2023-05-24 18:51:25.04
 39	31	2	2023-05-24 18:53:26.49
 40	32	1	2023-05-24 19:02:34.29
+41	33	1	2023-05-24 20:35:32.1
+42	34	1	2023-05-24 20:38:24.83
+43	35	2	2023-05-24 20:44:06.02
+44	35	3	2023-05-24 20:46:46.771691
+45	36	1	2023-05-24 20:52:35.77
+46	36	4	2023-05-24 20:54:11.814584
 \.
 
 
@@ -939,6 +949,14 @@ COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 62	Piotr Kendra	381 102 190	kendrap@gm.fr
 63	Jerema Klimek	104 040 103	pieshead@o3.pl
 64	Stanisław Tarański	491 212 214	staranski@p.gov.ok
+65	Kowal Kowalski	589 599 245	kkowalski@gmail.com
+66	Nowak Nowakowski	346 478 204	nnowakowski@gmail.com
+67	Piotr Piotrowski	468 288 222	ppiotrowski@gmail.com
+68	Adam Adamowski	419 204 107	aadamowski@gmai.com
+69	Jan Janowski	593 485 345	jjanowski@gmail.com
+70	Andrzej Andrzejowy	479 493 294	aandrzrjowy@gmail.com
+71	Piotr Piotrowksi	456 753 567	ppiotrowski@gmail.com
+72	Patryk Patrykowski	475 393 356	ppatrykowski@gmail.com
 \.
 
 
@@ -960,6 +978,10 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 4	28
 5	2
 5	30
+6	33
+7	34
+8	35
+9	36
 \.
 
 
@@ -973,6 +995,10 @@ COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_
 3	2023-05-24 18:32:00	4	4	7	t	1
 4	2023-05-24 18:56:00	3	5	1	f	2
 5	2023-05-24 19:00:00	1	3	2	f	2
+6	2023-05-24 20:38:00	2	1	4	f	1
+7	2023-05-24 20:40:00	3	6	3	f	1
+8	2023-05-24 20:46:00	3	8	10	t	2
+9	2023-05-24 20:54:00	4	8	9	t	1
 \.
 
 
