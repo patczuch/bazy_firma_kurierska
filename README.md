@@ -152,7 +152,7 @@ Adres: {{baseUrl}}/new_vehicle, metoda: POST
 Adres: {{baseUrl}}/set_permissions, metoda: POST
 
 ## Wnioski
-Tworząc nasz projekt zdecydowaliśmy się, że większość pracy będzie wykonywana w procedurach SQL, a endpointy będą dość lekkie i będą służyły głownie do wykonywania tych procedur. Uważamy, że była to dobra decyzja. Pisanie wszystkiego w endpointach byłoby trudniejsze i wymagałoby problematycznej obsługi dużej liczby potencjalnych błędów. Ograniczenie ilości zapytań do bazy danych może także poprawić wydajność serwera. Uważamy również, że takie rozwiązanie jest bardziej uporządkowane - to co związane z bazą zostaje w bazie.
+Tworząc nasz projekt zdecydowaliśmy, że większość pracy będzie wykonywana w procedurach SQL, a endpointy będą dość lekkie i będą służyły głownie do wykonywania tych procedur. Uważamy, że była to dobra decyzja. Pisanie wszystkiego w endpointach byłoby trudniejsze i wymagałoby problematycznej obsługi dużej liczby potencjalnych błędów. Ograniczenie ilości zapytań do bazy danych może także poprawić wydajność serwera. Uważamy również, że takie rozwiązanie jest bardziej uporządkowane - to co związane z bazą zostaje w bazie.
 
 ## Do poprawy lub uzupełnienia (27 kwietnia 2023)
 - ~~przedstawić opis problemu na początku README~~<br />
