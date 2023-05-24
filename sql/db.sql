@@ -792,6 +792,15 @@ COPY public.packages (id, weight, dimensions_id, sender_info_id, recipient_info_
 21	7.00000	2	41	42	2	2023-05-24 11:32:45.126903
 22	1.30000	2	43	44	2	\N
 23	1.30000	2	45	46	2	\N
+24	7.80000	2	47	48	10	\N
+25	49.70000	4	49	50	4	\N
+26	20.70000	3	51	52	3	\N
+27	17.00000	2	53	54	4	2023-05-24 18:35:41.982539
+28	16.70000	2	55	56	3	\N
+29	13.30000	1	57	58	3	\N
+30	9.70000	4	59	60	1	\N
+31	18.90000	2	61	62	3	\N
+32	13.20000	1	63	64	4	\N
 \.
 
 
@@ -828,6 +837,18 @@ COPY public.parcelpointpackages (id, package_id, parcelpoint_id, "time") FROM st
 24	21	4	2023-05-24 11:30:33.23
 27	22	1	2023-05-24 11:52:05.69
 28	23	1	2023-05-24 11:54:16.94
+29	24	1	2023-05-24 18:19:31.48
+30	25	1	2023-05-24 18:23:09.34
+31	26	1	2023-05-24 18:26:22.59
+32	27	1	2023-05-24 18:29:22.2
+33	27	4	2023-05-24 18:33:21.097767
+34	17	4	2023-05-24 18:33:21.097767
+35	13	4	2023-05-24 18:33:21.097767
+36	28	2	2023-05-24 18:46:07.43
+37	29	2	2023-05-24 18:47:49.81
+38	30	2	2023-05-24 18:51:25.04
+39	31	2	2023-05-24 18:53:26.49
+40	32	1	2023-05-24 19:02:34.29
 \.
 
 
@@ -900,6 +921,24 @@ COPY public.personinfo (id, name, phone_number, email) FROM stdin;
 44	Zenon Nowak	123456789	zenon@gmail.com
 45	Jan Kowalski	987654321	jan@gmail.com
 46	Zenon Nowak	123456789	zenon@gmail.com
+47	Olaf Kudłacz	758 395 294	olafkudlacz7@gmail.com
+48	Michał Fidziński	571 591 591	mfidzi@o2.gov.pl
+49	Michał Worek	675 500 511	worek8@wp.pl
+50	Jan Nowak	528 259 205	jnwk767676@gmail.com
+51	Dariusz Jabeł	666 666 666	djabeł@protonmail.com
+52	Grzegorz Horner	735 560 800	ghoor@vp.pl
+53	Jacek Placek	123 456 798	placekjacek@gmail.com
+54	Jacek Stalon	7	staljacek@mail.ru
+55	Jan Kudlacz	689 494 494	kudlaczjan@o5.pl
+56	Mateusz Czeski	232 323 232	czeskim@poczta.oficialna.gov.pl
+57	Piotr Dolewas	107 595 555	piotrdolewas@gmai.com
+58	Jan Łabędzki	777 888 990	labedzkijan@mail.ru
+59	Jack Longflield	902 210 101	jl@gmaix.com
+60	Łukasz Niebołaz	545 483 242	ŁukaszNie@mail.io
+61	Roman Klonowy	104 139 303	klonowyr@hmm.ru
+62	Piotr Kendra	381 102 190	kendrap@gm.fr
+63	Jerema Klimek	104 040 103	pieshead@o3.pl
+64	Stanisław Tarański	491 212 214	staranski@p.gov.ok
 \.
 
 
@@ -913,6 +952,14 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 1	5
 2	21
 2	16
+3	27
+3	17
+3	13
+4	10
+4	31
+4	28
+5	2
+5	30
 \.
 
 
@@ -923,6 +970,9 @@ COPY public.routepackages (route_id, package_id) FROM stdin;
 COPY public.routes (id, "time", destination_parcelpoint_id, vehicle_id, courier_id, completed, source_parcelpoint_id) FROM stdin;
 1	2023-05-03 13:20:00	2	1	1	t	1
 2	2023-05-24 11:31:00	2	10	3	t	4
+3	2023-05-24 18:32:00	4	4	7	t	1
+4	2023-05-24 18:56:00	3	5	1	f	2
+5	2023-05-24 19:00:00	1	3	2	f	2
 \.
 
 
