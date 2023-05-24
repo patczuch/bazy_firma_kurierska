@@ -114,10 +114,9 @@ Adres: {{baseUrl}}/create_route, metoda: POST <br />
 <br />W celu prawidłowego wykonania zapytania w zakładce Headers w Postmanie musimy dołączyć token autoryzacji:
 <img src="img/postman_authorization.png" width="700px"> <br />
 <br />Przykładowe zapytanie w Postmanie zakończone sukcesem:
-<img src="img/new_route_postman1.png" width="500px"> <br />
-<br />Przykładowe błędne zapytanie w Postmanie (TODO):
-<img src="img/new_route_postman2.png" width="500px"> <br />
-DO OPISANIA
+<img src="img/new_route_postman1.png" width="400px"> <br />
+<br />Przykładowe błędne zapytanie w Postmanie (za duża waga paczek dla tego pojazdu):
+<img src="img/new_route_postman2.png" width="400px"> <br />
 10. Potwierdzenie odebrania paczki <br />
 Adres: {{baseUrl}}/pickup_package, metoda: POST
 11. Przesyłki w punkcie <br />
@@ -127,9 +126,9 @@ Adres: {{baseUrl}}/parcelpoint_packages, metoda: POST <br />
 <img src="img/backend_parcelpoint_packages_helper_f.png" width="500px"> <br />
 <br />W celu prawidłowego wykonania zapytania w zakładce Headers w Postmanie musimy dołączyć token autoryzacji:
 <img src="img/postman_authorization.png" width="700px"> <br />
-<br />Przykładowe zapytanie w Postmanie zakończone sukcesem:
+<br />Przykładowe zapytanie w Postmanie zakończone sukcesem (nie jest potrzebne body zapytania, ponieważ id punktu paczkowego jest odczytywane z tokenu autoryzacji):
 <img src="img/new_parcelpoint_packages_postman1.png" width="500px"> <br />
-<br />Przykładowe błędne zapytanie w Postmanie (TODO):
+<br />Przykładowe błędne zapytanie w Postmanie (brak tokenu autoryzacji):
 <img src="img/new_parcelpoint_packages_postman2.png" width="500px"> <br />
 12. Trasy <br />
 Adres: {{baseUrl}}/routes, metoda: POST
