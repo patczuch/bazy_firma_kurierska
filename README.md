@@ -140,7 +140,7 @@ Adres: {{baseUrl}}/finish_route, metoda: POST <br />
 <img src="img/postman_authorization.png" width="700px"> <br />
 <br />Przykładowe zapytanie w Postmanie zakończone sukcesem:
 <img src="img/finish_route_postman1.png" width="500px"> <br />
-<br />Przykładowe błędne zapytanie w Postmanie (TODO):
+<br />Przykładowe błędne zapytanie w Postmanie (trasa już zakończona):
 <img src="img/finish_route_postman2.png" width="500px"> <br />
 14. Nowy kurier <br />
 Adres: {{baseUrl}}/new_courier, metoda: POST
@@ -152,7 +152,7 @@ Adres: {{baseUrl}}/new_vehicle, metoda: POST
 Adres: {{baseUrl}}/set_permissions, metoda: POST
 
 ## Wnioski
-Tworząc nasz projekt zdecydowaliśmy się, że większość pracy będzie wykonywana w procedurach SQL, a endpointy będą dość lekkie i będą służyły głownie do wykonywania tych procedur. Uważamy, że była to dobra decyzja. Pisanie wszystkiego w endpointach byłoby trudniejsze i wymagałoby problematycznej obsługi dużej liczby potencjalnych błędów. Ograniczenie ilości zapytań do bazy danych może także poprawić wydajność serwera. Uważamy również, że takie rozwiązanie jest bardziej spójne - to co związane z bazą zostaje w bazie.
+Tworząc nasz projekt zdecydowaliśmy się, że większość pracy będzie wykonywana w procedurach SQL, a endpointy będą dość lekkie i będą służyły głownie do wykonywania tych procedur. Uważamy, że była to dobra decyzja. Pisanie wszystkiego w endpointach byłoby trudniejsze i wymagałoby problematycznej obsługi dużej liczby potencjalnych błędów. Ograniczenie ilości zapytań do bazy danych może także poprawić wydajność serwera. Uważamy również, że takie rozwiązanie jest bardziej uporządkowane - to co związane z bazą zostaje w bazie.
 
 ## Do poprawy lub uzupełnienia (27 kwietnia 2023)
 - ~~przedstawić opis problemu na początku README~~<br />
@@ -161,6 +161,6 @@ Tworząc nasz projekt zdecydowaliśmy się, że większość pracy będzie wykon
 - ~~dodawać komentarze do kodu sql~~<br />
 - ~~opisać kluczowe tabele i funkcje (ale jak coś jest oczywiste to nie mieszać)~~<br />
 - ~~dokumentacja w jednym pliku (w miarę liniowa - bez linków itp.)~~<br />
-- zarysować architekturę backendu (Python + Flask) w dokumentacji<br />
-- testy do backendu w Postman'ie<br />
-- wnioski czy to dobrze ze zrobilismy tak ze procedury sa w postgresie i tylko je wywolujemy przez backend
+- ~~zarysować architekturę backendu (Python + Flask) w dokumentacji~~<br />
+- ~~testy do backendu w Postman'ie~~<br />
+- ~~wnioski czy to dobrze ze zrobilismy tak ze procedury sa w postgresie i tylko je wywolujemy przez backend~~
