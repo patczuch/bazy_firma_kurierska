@@ -9,20 +9,29 @@ from functools import wraps
 from flask_bcrypt import Bcrypt
 from psycopg2 import pool
 
+#inicjalizacja Flaska
 app = Flask(__name__)
+
+#inicjalizacja CORS
 CORS(app)
+
+#inicjalizacja Bcrypt (do hashowania haseł)
 bcrypt = Bcrypt(app)
 
+#ustawienie trybu na DEBUG
 app.config["DEBUG"] = True
 
+#ustawienie tajnego hasła do tworzenia tokenów autoryzacji
 app.config["JWT_SECRET_KEY"] = "haslo123haslo"
+
+#ustawienie czasu wygasania tokenów
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
+
+#inicjalizacja jwt
 jwt = JWTManager(app)
 
-#pg_conn = psycopg2.connect(host="localhost", dbname="postgres", port="5432", user="postgres", password="123456789")
-#pg_cur = pg_conn.cursor()
-
+#stworzenie poola do połączeń z bazą
 db_pool = psycopg2.pool.SimpleConnectionPool(
     minconn=1,
     maxconn=20,
@@ -33,8 +42,13 @@ db_pool = psycopg2.pool.SimpleConnectionPool(
     password='123456789'
 )
 
+#uruchomienie aplikacji
 if __name__ == '__main__':
     app.run(host=os.getenv("app_host"), port="5000")#, ssl_context='adhoc')
+
+
+#pg_conn = psycopg2.connect(host="localhost", dbname="postgres", port="5432", user="postgres", password="123456789")
+#pg_cur = pg_conn.cursor()
 
 #DOSTEPNE DLA WSZYSTKICH
 

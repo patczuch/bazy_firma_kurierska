@@ -75,8 +75,11 @@ Aby stworzyć trasę do przewozu paczek musi być spełnione wiele warunków tak
 12. [Zaktualizowanie uprawnień użytkownika](./sql/functions/UpdateUserPrivileges.sql)<br /> <br />
 
 ## Backend
-Backend naszego projektu został wykonany w Pythonie przy pomocy frameworka Flask. Do porozumienia z bazą PostgreSQL korzystaliśmy również z biblioteki psycopg2. Kod źródłowy wszystkich endpointów znajduje się w pliku [app.py](./back_end/app.py).
+Backend naszego projektu został wykonany w Pythonie przy pomocy frameworka Flask. We Flasku każdy endpoint jest funkcją poprzedzoną odpowiednimi adnotacjami, zwracającą krotkę (odpowiedź, kod odpowiedzi HTTP). Do porozumienia z bazą PostgreSQL korzystaliśmy również z biblioteki psycopg2. Kod źródłowy wszystkich endpointów znajduje się w pliku [app.py](./back_end/app.py).
+
 ### Dostępne endpointy
+Przed stworzeniem endpointów musimy zainicjalizować aplikację:
+<br /><img src="img/backend_init.png" width="400px"> <br />
 1. Logowanie <br />
 Adres: {{baseUrl}}/login, metoda: POST
 2. Rejestracja <br />
@@ -126,6 +129,9 @@ Adres: {{baseUrl}}/new_parcelpoint, metoda: POST
 Adres: {{baseUrl}}/new_vehicle, metoda: POST
 17. Nadanie uprawnień kontom <br />
 Adres: {{baseUrl}}/set_permissions, metoda: POST
+
+## Wnioski
+Tworząc nasz projekt zdecydowaliśmy się, że większość pracy będzie wykonywana w procedurach SQL, a endpointy będą dość lekkie i będą służyły głownie do wykonywania tych procedur. Uważamy, że była to dobra decyzja. Pisanie wszystkiego w endpointach byłoby trudniejsze i wymagałoby problematycznej obsługi dużej liczby potencjalnych błędów. Ograniczenie ilości zapytań do bazy danych może także poprawić wydajność serwera. Uważamy również, że takie rozwiązanie jest bardziej spójne - to co związane z bazą zostaje w bazie.
 
 ## Do poprawy lub uzupełnienia (27 kwietnia 2023)
 - ~~przedstawić opis problemu na początku README~~<br />
